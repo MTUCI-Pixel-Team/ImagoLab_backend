@@ -5,7 +5,6 @@ package core
 */
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -13,9 +12,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type DBCredentials struct {
+	Host     string
+	User     string
+	Password string
+	DB_Name  string
+	Port     int
+}
+
+/*
+Список приложений, которые будут докумментироваться
+*/
 var APPS = []string{
 	"user",
-	"chats",
 }
 
 const (
@@ -33,23 +42,23 @@ const (
 	IS_ALLOWED_HOSTS bool = true
 	REQ_MIDDLEWARE   bool = true
 	KEEP_ALIVE       bool = true
-	// Настройки БД
-	DB_USER string = "admin"
-	DB_NAME string = "dev"
-	DB_PORT int    = 5432
 )
 
-// Настройки БД
-var (
-	DB_PASSWORD    string
-	CONNECTIONDATA string
-)
+/*
+Настройки базы данных
+*/
+var DB_CREDENTIALS = DBCredentials{
+	Host:    "localhost",
+	User:    "admin",
+	DB_Name: "dev",
+	Port:    5432,
+}
 
+/*
+Настройки подключений
+*/
 var ALLOWED_HOSTS = []string{
-	"localhost",
-	"127.0.0.1",
-	"77.232.37.23",
-	"::1",
+	"/*",
 }
 
 var ALLOWED_METHODS = []string{
@@ -80,14 +89,17 @@ var (
 	JWT_REFRESH_EXPIRATION_TIME time.Duration = time.Hour * 336
 )
 
-/*
-MTS API KEY
-*/
+// /*
+// MTS API KEY
+// */
 var (
 	MTS_API_KEY    string
 	MTS_API_NUMBER string
 )
 
+/*
+инициализация переменных окружения
+*/
 func InitEnv() error {
 	err := godotenv.Load()
 	if err != nil {
@@ -106,9 +118,9 @@ func InitEnv() error {
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
-	DB_PASSWORD = os.Getenv("DB_PASSWORD")
-	CONNECTIONDATA = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable", HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT)
-	if CONNECTIONDATA == "" || DB_PASSWORD == "" {
+
+	DB_CREDENTIALS.Password = os.Getenv("DB_PASSWORD")
+	if DB_CREDENTIALS.Password == "" {
 		log.Fatalf("Error env load %v", err)
 		return err
 	}

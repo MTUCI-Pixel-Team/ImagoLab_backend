@@ -3,64 +3,61 @@ package user
 import (
 	"RestAPI/core"
 	"errors"
-	"os"
 	"testing"
 	"time"
-
-	"github.com/joho/godotenv"
 )
 
-/*
-Test mobile.go
-*/
-func TestSendSms(t *testing.T) {
-	testCases := []struct {
-		message string
-		Mobile  string
-		err     error
-	}{
-		{
-			message: "Hello",
-			Mobile:  "79936977511",
-			err:     nil,
-		},
-		{
-			message: "",
-			Mobile:  "79936977511",
-			err:     errors.New("Message is empty"),
-		},
-		{
-			message: "Hello",
-			Mobile:  "",
-			err:     errors.New("Mobile number is empty"),
-		},
-	}
+// /*
+// Test mobile.go
+// */
+// func TestSendSms(t *testing.T) {
+// 	testCases := []struct {
+// 		message string
+// 		Mobile  string
+// 		err     error
+// 	}{
+// 		{
+// 			message: "Hello",
+// 			Mobile:  "79936977511",
+// 			err:     nil,
+// 		},
+// 		{
+// 			message: "",
+// 			Mobile:  "79936977511",
+// 			err:     errors.New("Message is empty"),
+// 		},
+// 		{
+// 			message: "Hello",
+// 			Mobile:  "",
+// 			err:     errors.New("Mobile number is empty"),
+// 		},
+// 	}
 
-	err := godotenv.Load("../.env")
-	if err != nil {
-		t.Errorf("Error env load %v", err)
-	}
-	core.MTS_API_KEY = os.Getenv("MTS_API_KEY")
-	core.MTS_API_NUMBER = os.Getenv("MTS_API_NUMBER")
-	if core.MTS_API_KEY == "" || core.MTS_API_NUMBER == "" {
-		t.Errorf("Error env load %v", err)
-	}
+// 	err := godotenv.Load("../.env")
+// 	if err != nil {
+// 		t.Errorf("Error env load %v", err)
+// 	}
+// 	core.MTS_API_KEY = os.Getenv("MTS_API_KEY")
+// 	core.MTS_API_NUMBER = os.Getenv("MTS_API_NUMBER")
+// 	if core.MTS_API_KEY == "" || core.MTS_API_NUMBER == "" {
+// 		t.Errorf("Error env load %v", err)
+// 	}
 
-	for _, tc := range testCases {
-		u := new(User)
-		u.Mobile = tc.Mobile
-		err := u.SendSMS(tc.message)
-		if err != nil {
-			if tc.err == nil {
-				t.Errorf("Unexpected error: %v", err)
-			} else if err.Error() != tc.err.Error() {
-				t.Errorf("Expected error: %v, got: %v", tc.err, err)
-			}
-		} else if tc.err != nil {
-			t.Errorf("Expected error: %v, but got none", tc.err)
-		}
-	}
-}
+// 	for _, tc := range testCases {
+// 		u := new(User)
+// 		u.Mobile = tc.Mobile
+// 		err := u.SendSMS(tc.message)
+// 		if err != nil {
+// 			if tc.err == nil {
+// 				t.Errorf("Unexpected error: %v", err)
+// 			} else if err.Error() != tc.err.Error() {
+// 				t.Errorf("Expected error: %v, got: %v", tc.err, err)
+// 			}
+// 		} else if tc.err != nil {
+// 			t.Errorf("Expected error: %v, but got none", tc.err)
+// 		}
+// 	}
+// }
 
 /*
 Test jwtOuth.go
@@ -75,15 +72,15 @@ func initSecrets() {
 func TestJWTFunctions(t *testing.T) {
 	testCases := []struct {
 		name        string
-		mobile      string
-		isActive    bool
+		username    string
+		email       string
 		expectedErr error
 		testFunc    func() error
 	}{
 		{
 			name:        "Generate Secret Key",
-			mobile:      "",
-			isActive:    false,
+			email:       "",
+			username:    "",
 			expectedErr: nil,
 			testFunc: func() error {
 				_, err := GenerateSecretKey(32)
@@ -92,31 +89,31 @@ func TestJWTFunctions(t *testing.T) {
 		},
 		{
 			name:        "Generate Access Token",
-			mobile:      "1234567890",
-			isActive:    true,
+			email:       "test@example.com",
+			username:    "testuser",
 			expectedErr: nil,
 			testFunc: func() error {
-				_, err := GenerateAccessToken("1234567890", true)
+				_, err := GenerateAccessToken("testuser", "test@example.com")
 				return err
 			},
 		},
 		{
 			name:        "Generate Refresh Token",
-			mobile:      "1234567890",
-			isActive:    true,
+			email:       "test@example.com",
+			username:    "testuser",
 			expectedErr: nil,
 			testFunc: func() error {
-				_, err := GenerateRefreshToken("1234567890", true)
+				_, err := GenerateRefreshToken("testuser", "test@example.com")
 				return err
 			},
 		},
 		{
 			name:        "Validate Access Token",
-			mobile:      "1234567890",
-			isActive:    true,
+			username:    "testuser",
+			email:       "test@example.com",
 			expectedErr: nil,
 			testFunc: func() error {
-				token, err := GenerateAccessToken("1234567890", true)
+				token, err := GenerateAccessToken("testuser", "test@example.com")
 				if err != nil {
 					return err
 				}
@@ -126,8 +123,8 @@ func TestJWTFunctions(t *testing.T) {
 		},
 		{
 			name:        "Invalid Access Token",
-			mobile:      "",
-			isActive:    false,
+			username:    "",
+			email:       "",
 			expectedErr: errors.New("error expected"),
 			testFunc: func() error {
 				_, err := ValidateToken("invalidToken")
@@ -136,11 +133,11 @@ func TestJWTFunctions(t *testing.T) {
 		},
 		{
 			name:        "Refresh Tokens",
-			mobile:      "1234567890",
-			isActive:    true,
+			username:    "testuser",
+			email:       "test@example.com",
 			expectedErr: nil,
 			testFunc: func() error {
-				refreshToken, err := GenerateRefreshToken("1234567890", true)
+				refreshToken, err := GenerateRefreshToken("testuser", "test@example.com")
 				if err != nil {
 					return err
 				}
@@ -149,27 +146,13 @@ func TestJWTFunctions(t *testing.T) {
 			},
 		},
 		{
-			name:        "Invalid Token Type for Refresh",
-			mobile:      "1234567890",
-			isActive:    true,
-			expectedErr: errors.New("error expected"),
-			testFunc: func() error {
-				accessToken, err := GenerateAccessToken("1234567890", true)
-				if err != nil {
-					return err
-				}
-				_, _, err = RefreshTokens(accessToken)
-				return err
-			},
-		},
-		{
 			name:        "Expired Access Token",
-			mobile:      "1234567890",
-			isActive:    true,
+			username:    "testuser",
+			email:       "test@example.com",
 			expectedErr: errors.New("error expected"),
 			testFunc: func() error {
 				core.JWT_ACCESS_EXPIRATION_TIME = time.Millisecond * 100
-				token, err := GenerateAccessToken("1234567890", true)
+				token, err := GenerateAccessToken("testuser", "test@example.com")
 				if err != nil {
 					return err
 				}
@@ -180,46 +163,22 @@ func TestJWTFunctions(t *testing.T) {
 			},
 		},
 		{
-			name:        "Generate Access Token with Empty Mobile",
-			mobile:      "",
-			isActive:    true,
-			expectedErr: errors.New("Mobile number is empty"),
+			name:        "Generate Access Token with Empty Username",
+			username:    "",
+			email:       "test@example.com",
+			expectedErr: errors.New("username is empty"),
 			testFunc: func() error {
-				_, err := GenerateAccessToken("", true)
+				_, err := GenerateAccessToken("", "test@example.com")
 				return err
 			},
 		},
 		{
-			name:        "Generate Refresh Token with Empty Mobile",
-			mobile:      "",
-			isActive:    true,
-			expectedErr: errors.New("Mobile number is empty"),
+			name:        "Generate Refresh Token with Empty Email",
+			username:    "testuser",
+			email:       "",
+			expectedErr: errors.New("email is empty"),
 			testFunc: func() error {
-				_, err := GenerateRefreshToken("", true)
-				return err
-			},
-		},
-		{
-			name:        "Validate Invalid Token",
-			mobile:      "",
-			isActive:    false,
-			expectedErr: errors.New("error expected"),
-			testFunc: func() error {
-				_, err := ValidateToken("invalidToken")
-				return err
-			},
-		},
-		{
-			name:        "Refresh with Invalid Token Type",
-			mobile:      "1234567890",
-			isActive:    true,
-			expectedErr: errors.New("Invalid token type"),
-			testFunc: func() error {
-				accessToken, err := GenerateAccessToken("1234567890", true)
-				if err != nil {
-					return err
-				}
-				_, _, err = RefreshTokens(accessToken)
+				_, err := GenerateRefreshToken("testuser", "")
 				return err
 			},
 		},

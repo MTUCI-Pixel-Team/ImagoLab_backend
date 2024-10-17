@@ -3,8 +3,8 @@ package main
 import (
 	"RestAPI/app"
 	"RestAPI/core"
+	"RestAPI/db"
 	"RestAPI/docs"
-	"RestAPI/orm"
 	"log"
 )
 
@@ -20,9 +20,9 @@ func main() {
 		return
 	}
 
-	er = orm.InitDB()
+	er = db.ConnectToDB(core.DB_CREDENTIALS)
 	if er != nil {
-		log.Println("Error inittializing DB", er)
+		log.Println("Error connecting to DB", er)
 		return
 	}
 

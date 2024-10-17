@@ -10,7 +10,7 @@ import (
 )
 
 func isAllowedHostMiddleware(clientAddr string) bool {
-	if !IS_ALLOWED_HOSTS {
+	if !IS_ALLOWED_HOSTS || ALLOWED_HOSTS[0] == "/*" {
 		return true
 	}
 

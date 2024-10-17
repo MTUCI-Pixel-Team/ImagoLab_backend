@@ -1,31 +1,41 @@
 package db
 
-// Create our models here
-type User struct {
-	TableName string
-	ID        int    `json:"id" orm:"serial_primary_key"`
-	Mobile    string `json:"mobile" orm:"varchar unique not_null"`
-	Otp       string `json:"otp" orm:"int"`
-	isActive  bool   `orm:"bool not_null"`
-	Name      string `json:"name" orm:"varchar"`
-	Surname   string `json:"surname" orm:"varchar"`
-	Age       int    `json:"age" orm:"int"`
-	Email     string `json:"email" orm:"varchar unique"`
-	Password  string `json:"password" orm:"varchar"`
-	createAt  string `orm:"timestamp"`
-	updateAt  string `orm:"timestamp"`
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+/*
+Для автоматической миграции моделей в базу данных внести модель в массив AutoMigrateModels
+*/
+var autoMigrateModels = []any{
+	User{},
+	Token{},
+	Image{},
 }
 
-type Tokens struct {
-	UserID           string
-	AccessTokenHash  string
-	RefreshTokenHash string
-	ExpiredAt        string
-	CreateAt         string
-	UpdateAt         string
+// Create our models here
+type User struct {
+	gorm.Model
+	Username     string  `json:"username" gorm:"size:64;not null"`
+	IsActive     bool    `json:"is_active" gorm:"default:false"`
+	Email        string  `json:"email" gorm:"size:256;not null;unique"`
+	PasswordHash string  `json:"password,omitempty" gorm:"size:256;not null"`
+	Tokens       *Token  `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Image        []Image `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+}
+
+type Token struct {
+	gorm.Model
+	UserID           uint
+	AccessTokenHash  string `gorm:"size:256"`
+	RefreshTokenHash string `gorm:"size:256"`
+	ExpiredAt        time.Time
 }
 
 type Image struct {
-	UserID   string
+	gorm.Model
+	UserID   uint
 	ImageURL string
 }

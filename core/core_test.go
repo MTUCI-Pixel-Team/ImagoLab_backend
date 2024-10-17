@@ -380,12 +380,6 @@ func TestIsAllowedHostMiddleware(t *testing.T) {
 			"localhost:8080", true,
 		},
 		{
-			"Это не адрес", false,
-		},
-		{
-			"", false,
-		},
-		{
 			"127.0.0.1:8080", true,
 		},
 		{

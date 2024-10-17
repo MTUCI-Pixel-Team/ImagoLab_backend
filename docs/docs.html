@@ -20,7 +20,7 @@
         
 
         <section>
-            <h2>chats</h2>
+            <h2>user</h2>
             <div class="content">
                 
 
@@ -29,81 +29,7 @@
                     <div class="route-header get">
                         <div class="route-type">
                             <span class="method get">GET</span>
-                            /chats
-                        </div>
-                        <div>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        <p><strong>Summary:</strong> Verify user</p>
-                        <p><strong>Description:</strong> Verify user with the given data</p>
-
-                        
-
-
-                        <button class="try-it-out get">Try it out</button>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-GetChat" class="request-form" data-url="/chats">
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button get">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;Message&#34;: &#34;User verified&#34;
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-            </div>
-        </section>
-
-        
-
-        <section>
-            <h2>user</h2>
-            <div class="content">
-                
-
-                <div class="route-block">
-
-                    <div class="route-header delete">
-                        <div class="route-type">
-                            <span class="method delete">DELETE</span>
-                            /user/create
+                            /user/get
                         </div>
                         <div>
                             
@@ -114,67 +40,12 @@
                     </div>
 
                     <div class="route-info">
-                        <p><strong>Summary:</strong> Create a new user</p>
-                        <p><strong>Description:</strong> Create a new user with the given data</p>
-
                         
-
-
-                        <button class="try-it-out delete">Try it out</button>
-
+                        <p><strong>Summary:</strong> Get user by id</p>
                         
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-CreateUser" class="request-form" data-url="/user/create">
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button delete">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
                         
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
-                    <div class="route-header get">
-                        <div class="route-type">
-                            <span class="method get">GET</span>
-                            /user/verify
-                        </div>
-                        <div>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        <p><strong>Summary:</strong> Verify user</p>
-                        <p><strong>Description:</strong> Verify user with the given data</p>
-
+                        <p><strong>Description:</strong> Get user by id from the database</p>
                         
-
-                        <div class="type-selection">
-                            <h4>Request body:</h4>
-                            <label for="content-type-VerifyUserHandler">Select Content Type:</label>
-                            <select id="content-type-VerifyUserHandler" name="content-type">
-                                
-                                <option value="application/json">application/json</option>
-                                
-                            </select><br>
-                        </div>
-
                         
 
 
@@ -182,39 +53,9 @@
 
                         
 
-                        <div class="example-value">
-                            <p>Example value</p>
-                            
-                            <div class="json-example json-example-VerifyUserHandler">
-                                <pre>{
-	&#34;mobile&#34;: &#34;string&#34;,
-	&#34;otp&#34;: &#34;string&#34;
-}
-</pre>
-                            </div>
-                            
-                            
-
-                        </div>
-
-                        
-
                         <div class="try-it" style="display:none;">
                             <button class="return-from-try">Cancel</button>
-                            <form id="request-form-VerifyUserHandler" class="request-form" data-url="/user/verify">
-
-                                
-
-                                <textarea id="json-input-VerifyUserHandler" name="json-body" placeholder='{
-	&#34;mobile&#34;: &#34;string&#34;,
-	&#34;otp&#34;: &#34;string&#34;
-}
-'
-                                    style="display: none;" required>{
-	&#34;mobile&#34;: &#34;string&#34;,
-	&#34;otp&#34;: &#34;string&#34;
-}
-</textarea>
+                            <form id="request-form-GetUserHandler" class="request-form" data-url="/user/get">
 
                                 
 
@@ -236,7 +77,8 @@
                                 <p>Example value: application/json</p>
                                 <div class="code-block">
                                     <pre>{
-	&#34;Message&#34;: &#34;User verified&#34;
+	&#34;username&#34;: &#34;string&#34;,
+	&#34;email&#34;: &#34;string&#34;,
 }
 </pre>
                                 </div>
@@ -258,7 +100,7 @@
                     <div class="route-header post">
                         <div class="route-type">
                             <span class="method post">POST</span>
-                            /createUserForm
+                            /user/create
                         </div>
                         <div>
                             
@@ -267,17 +109,18 @@
                     </div>
 
                     <div class="route-info">
-                        <p><strong>Summary:</strong> Create a new user with form data</p>
-                        <p><strong>Description:</strong> Create a new user with the given data and images</p>
-
+                        
+                        <p><strong>Summary:</strong> Create a new user</p>
+                        
+                        
+                        <p><strong>Description:</strong> Create a new user with the given data and save it to the database</p>
+                        
                         
 
                         <div class="type-selection">
                             <h4>Request body:</h4>
-                            <label for="content-type-CreateUserFormdataHandler">Select Content Type:</label>
-                            <select id="content-type-CreateUserFormdataHandler" name="content-type">
-                                
-                                <option value="multipart/form-data">multipart/form-data</option>
+                            <label for="content-type-CreateUserHandler">Select Content Type:</label>
+                            <select id="content-type-CreateUserHandler" name="content-type">
                                 
                                 <option value="application/json">application/json</option>
                                 
@@ -294,36 +137,15 @@
                         <div class="example-value">
                             <p>Example value</p>
                             
-                            <div class="json-example json-example-CreateUserFormdataHandler">
+                            <div class="json-example json-example-CreateUserHandler">
                                 <pre>{
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
+	&#34;username&#34;: &#34;string&#34;,
 	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
-	&#34;images&#34;: &#34;file&#34;
+	&#34;password&#34;: &#34;string&#34;
 }
 </pre>
                             </div>
                             
-                            
-                            <div class="form-data-example form-data-example-CreateUserFormdataHandler">
-
-                                
-                                <p>age: int</p>
-                                
-                                <p>email: string</p>
-                                
-                                <p>images: file</p>
-                                
-                                <p>mobile: string</p>
-                                
-                                <p>name: string</p>
-                                
-                                <p>surname: string</p>
-                                
-
-                            </div>
                             
 
                         </div>
@@ -332,117 +154,24 @@
 
                         <div class="try-it" style="display:none;">
                             <button class="return-from-try">Cancel</button>
-                            <form id="request-form-CreateUserFormdataHandler" class="request-form" data-url="/createUserForm">
+                            <form id="request-form-CreateUserHandler" class="request-form" data-url="/user/create">
 
                                 
 
-                                <textarea id="json-input-CreateUserFormdataHandler" name="json-body" placeholder='{
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
+                                <textarea id="json-input-CreateUserHandler" name="json-body" placeholder='{
+	&#34;username&#34;: &#34;string&#34;,
 	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
-	&#34;images&#34;: &#34;file&#34;
+	&#34;password&#34;: &#34;string&#34;
 }
 '
                                     style="display: none;" required>{
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
+	&#34;username&#34;: &#34;string&#34;,
 	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
-	&#34;images&#34;: &#34;file&#34;
+	&#34;password&#34;: &#34;string&#34;
 }
 </textarea>
 
                                 
-
-                                
-
-                                <div id="form-data-input-CreateUserFormdataHandler" class="input-field" style="display: none;">
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-age">age: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-age" type="text"
-                                            name="age" placeholder="int" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-email">email: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-email" type="text"
-                                            name="email" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-images">images: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-images" type="file"
-                                            name="images" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-mobile">mobile: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-mobile" type="text"
-                                            name="mobile" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-name">name: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-name" type="text"
-                                            name="name" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-surname">surname: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-surname" type="text"
-                                            name="surname" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-
-                                </div>
 
                                 
 
@@ -462,11 +191,8 @@
                                 <p>Example value: application/json</p>
                                 <div class="code-block">
                                     <pre>{
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
+	&#34;username&#34;: &#34;string&#34;,
 	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
 }
 </pre>
                                 </div>
@@ -488,7 +214,7 @@
                     <div class="route-header post">
                         <div class="route-type">
                             <span class="method post">POST</span>
-                            /user/dasda
+                            /user/auth
                         </div>
                         <div>
                             
@@ -497,21 +223,18 @@
                     </div>
 
                     <div class="route-info">
-                        <p><strong>Summary:</strong> Create a new user with form data</p>
-                        <p><strong>Description:</strong> Create a new user with the given data and images</p>
-
+                        
+                        <p><strong>Summary:</strong> Authentification user</p>
+                        
+                        
                         
 
                         <div class="type-selection">
                             <h4>Request body:</h4>
-                            <label for="content-type-Test">Select Content Type:</label>
-                            <select id="content-type-Test" name="content-type">
-                                
-                                <option value="multipart/form-data">multipart/form-data</option>
+                            <label for="content-type-AuthUserHandler">Select Content Type:</label>
+                            <select id="content-type-AuthUserHandler" name="content-type">
                                 
                                 <option value="application/json">application/json</option>
-                                
-                                <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded</option>
                                 
                             </select><br>
                         </div>
@@ -526,33 +249,14 @@
                         <div class="example-value">
                             <p>Example value</p>
                             
-                            <div class="json-example json-example-Test">
+                            <div class="json-example json-example-AuthUserHandler">
                                 <pre>{
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
 	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
+	&#34;password&#34;: &#34;string&#34;
 }
 </pre>
                             </div>
                             
-                            
-                            <div class="form-data-example form-data-example-Test">
-
-                                
-                                <p>age: int</p>
-                                
-                                <p>email: string</p>
-                                
-                                <p>mobile: string</p>
-                                
-                                <p>name: string</p>
-                                
-                                <p>surname: string</p>
-                                
-
-                            </div>
                             
 
                         </div>
@@ -561,102 +265,22 @@
 
                         <div class="try-it" style="display:none;">
                             <button class="return-from-try">Cancel</button>
-                            <form id="request-form-Test" class="request-form" data-url="/user/dasda">
+                            <form id="request-form-AuthUserHandler" class="request-form" data-url="/user/auth">
 
                                 
 
-                                <textarea id="json-input-Test" name="json-body" placeholder='{
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
+                                <textarea id="json-input-AuthUserHandler" name="json-body" placeholder='{
 	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
+	&#34;password&#34;: &#34;string&#34;
 }
 '
                                     style="display: none;" required>{
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
 	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
+	&#34;password&#34;: &#34;string&#34;
 }
 </textarea>
 
                                 
-
-                                
-
-                                <div id="form-data-input-Test" class="input-field" style="display: none;">
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-age">age: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-age" type="text"
-                                            name="age" placeholder="int" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-email">email: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-email" type="text"
-                                            name="email" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-mobile">mobile: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-mobile" type="text"
-                                            name="mobile" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-name">name: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-name" type="text"
-                                            name="name" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-surname">surname: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-surname" type="text"
-                                            name="surname" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-
-                                </div>
 
                                 
 
@@ -676,241 +300,8 @@
                                 <p>Example value: application/json</p>
                                 <div class="code-block">
                                     <pre>{
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
-	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
-                    <div class="route-header post">
-                        <div class="route-type">
-                            <span class="method post">POST</span>
-                            /user/daedassda
-                        </div>
-                        <div>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        <p><strong>Summary:</strong> Create a new user with form data</p>
-                        <p><strong>Description:</strong> Create a new user with the given data and images</p>
-
-                        
-
-                        <div class="type-selection">
-                            <h4>Request body:</h4>
-                            <label for="content-type-Test2">Select Content Type:</label>
-                            <select id="content-type-Test2" name="content-type">
-                                
-                                <option value="multipart/form-data">multipart/form-data</option>
-                                
-                                <option value="application/json">application/json</option>
-                                
-                            </select><br>
-                        </div>
-
-                        
-
-
-                        <button class="try-it-out post">Try it out</button>
-
-                        
-
-                        <div class="example-value">
-                            <p>Example value</p>
-                            
-                            <div class="json-example json-example-Test2">
-                                <pre>{
-	&#34;img&#34;: &#34;file&#34;,
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
-	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
-}
-</pre>
-                            </div>
-                            
-                            
-                            <div class="form-data-example form-data-example-Test2">
-
-                                
-                                <p>age: int</p>
-                                
-                                <p>email: string</p>
-                                
-                                <p>img: file</p>
-                                
-                                <p>mobile: string</p>
-                                
-                                <p>name: string</p>
-                                
-                                <p>surname: string</p>
-                                
-
-                            </div>
-                            
-
-                        </div>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-Test2" class="request-form" data-url="/user/daedassda">
-
-                                
-
-                                <textarea id="json-input-Test2" name="json-body" placeholder='{
-	&#34;img&#34;: &#34;file&#34;,
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
-	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
-}
-'
-                                    style="display: none;" required>{
-	&#34;img&#34;: &#34;file&#34;,
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
-	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
-}
-</textarea>
-
-                                
-
-                                
-
-                                <div id="form-data-input-Test2" class="input-field" style="display: none;">
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-age">age: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-age" type="text"
-                                            name="age" placeholder="int" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-email">email: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-email" type="text"
-                                            name="email" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-img">img: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-img" type="file"
-                                            name="img" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-mobile">mobile: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-mobile" type="text"
-                                            name="mobile" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-name">name: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-name" type="text"
-                                            name="name" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-                                    <div class="form-data-option">
-
-                                        <label for="form-data-option-surname">surname: </label>
-
-                                        
-                                        <input class="input-form-option" id="form-data-option-surname" type="text"
-                                            name="surname" placeholder="string" required>
-                                        
-
-                                    </div>
-
-                                    
-
-
-                                </div>
-
-                                
-
-                                <button type="submit" class="submit-button post">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;name&#34;: &#34;string&#34;,
-	&#34;surname&#34;: &#34;string&#34;,
-	&#34;mobile&#34;: &#34;string&#34;,
-	&#34;email&#34;: &#34;string&#34;,
-	&#34;age&#34;: &#34;int&#34;
+	&#34;access&#34;: &#34;string&#34;,
+	&#34;refresh&#34;: &#34;string&#34;
 }
 </pre>
                                 </div>

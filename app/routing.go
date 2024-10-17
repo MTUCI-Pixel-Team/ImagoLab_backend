@@ -14,7 +14,7 @@ type funcInfo struct {
 var HandlersList = make(map[string]funcInfo)
 
 func registerHandler(url string, f HandlerFunc, name ...string) {
-	handlerName := ""
+	var handlerName string
 	if len(name) > 0 {
 		handlerName = name[0]
 	}

@@ -6,7 +6,7 @@ package app
 
 import (
 	"RestAPI/core"
-	"fmt"
+	"log"
 	"mime"
 	"strconv"
 	"strings"
@@ -17,7 +17,7 @@ func MainApplication(request *core.HttpRequest) ([]byte, error) {
 		return core.HTTP400.ToBytes(), nil
 	}
 	if request.Method == "OPTIONS" {
-		response := core.HTTP200
+		response := core.HTTP200.Copy()
 		allowedOrigins := strings.Join(core.ALLOWED_HOSTS, ", ")
 		allowedMethods := strings.Join(core.ALLOWED_METHODS, ", ")
 		allowedContentTypes := strings.Join(core.SUPPORTED_MEDIA_TYPES, ", ")
@@ -33,14 +33,13 @@ func MainApplication(request *core.HttpRequest) ([]byte, error) {
 	if contentType == "application/x-www-form-urlencoded" || contentType == "multipart/form-data" {
 		er := request.ParseFormData()
 		if er != nil {
-			fmt.Println("Error parsing form data:", er)
-			return core.HTTP400.ToBytes(), nil
+			log.Println("Error parsing form data:", er)
+			return core.HTTP400.Copy().ToBytes(), nil
 		}
 	}
-
 	view := router(request.Url)
 	if view == nil {
-		return core.HTTP404.ToBytes(), nil
+		return core.HTTP404.Copy().ToBytes(), nil
 	}
 
 	response := view(*request)

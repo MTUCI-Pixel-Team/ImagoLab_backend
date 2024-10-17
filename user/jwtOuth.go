@@ -21,13 +21,13 @@ func GenerateSecretKey(length int) (string, error) {
 	return base64.URLEncoding.EncodeToString(key), nil
 }
 
-func GenerateAccessToken(mobile string, isActive bool) (string, error) {
-	if mobile == "" {
-		return "", errors.New("Mobile number is empty")
+func GenerateAccessToken(username string, email string) (string, error) {
+	if username == "" || email == "" {
+		return "", errors.New("Username or email is empty")
 	}
 	claims := jwt.MapClaims{
-		"mobile":     mobile,
-		"isActive":   isActive,
+		"username":   username,
+		"email":      email,
 		"exp":        time.Now().Add(core.JWT_ACCESS_EXPIRATION_TIME).Unix(),
 		"token_type": "access",
 	}
@@ -36,13 +36,13 @@ func GenerateAccessToken(mobile string, isActive bool) (string, error) {
 	return token.SignedString([]byte(core.JWT_ACCESS_SECRET_KEY))
 }
 
-func GenerateRefreshToken(mobile string, isActive bool) (string, error) {
-	if mobile == "" {
-		return "", errors.New("Mobile number is empty")
+func GenerateRefreshToken(username string, email string) (string, error) {
+	if username == "" || email == "" {
+		return "", errors.New("Username or email is empty")
 	}
 	claims := jwt.MapClaims{
-		"mobile":     mobile,
-		"isActive":   isActive,
+		"username":   username,
+		"email":      email,
 		"exp":        time.Now().Add(core.JWT_REFRESH_EXPIRATION_TIME).Unix(),
 		"token_type": "refresh",
 	}
@@ -85,14 +85,18 @@ func RefreshTokens(refreshTokenString string) (string, string, error) {
 	if !ok || claims["token_type"] != "refresh" {
 		return "", "", errors.New("Invalid token type")
 	}
-	mobile, isActive := claims["mobile"].(string), claims["isActive"].(bool)
+	username, usernameOk := claims["username"].(string)
+	email, emailOk := claims["email"].(string)
+	if !usernameOk || !emailOk {
+		return "", "", errors.New("Invalid username or email in token claims")
+	}
 
-	newAccessToken, err := GenerateAccessToken(mobile, isActive)
+	newAccessToken, err := GenerateAccessToken(username, email)
 	if err != nil {
 		return "", "", err
 	}
 
-	newRefreshToken, err := GenerateRefreshToken(mobile, isActive)
+	newRefreshToken, err := GenerateRefreshToken(username, email)
 	if err != nil {
 		return "", "", err
 	}

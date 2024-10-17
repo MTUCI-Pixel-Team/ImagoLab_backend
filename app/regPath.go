@@ -1,8 +1,8 @@
 package app
 
 import (
-	"RestAPI/chats"
 	"RestAPI/docs"
+	"RestAPI/media"
 	"RestAPI/user"
 )
 
@@ -17,9 +17,8 @@ func InitHandlers() {
 	registerHandler("/api/docs", docs.GetDocs, "docs")
 	registerHandler("/api/docs/templates/css/styles.css", docs.GetDocsCSS, "docs")
 	registerHandler("/api/docs/templates/js/script.js", docs.GetDocsJS, "docs")
-	registerHandler("/images", user.ImageHandler, "images")
-	registerHandler("/createUser", user.CreateUserHandler, "createUser")
-	registerHandler("/verifyUser", user.VerifyUserHandler, "verifyUser")
-	registerHandler("/createUserForm", user.CreateUserFormdataHandler, "createUserForm")
-	registerHandler("/chats", chats.GetChat, "GetChat")
+	registerHandler("/images", media.ImageHandler, "images")
+	registerHandler("/user/create", user.CreateUserHandler, "createUser")
+	registerHandler("/user/auth", user.AuthUserHandler, "verifyUser")
+	registerHandler("/user/get", user.GetUserHandler, "getUser")
 }

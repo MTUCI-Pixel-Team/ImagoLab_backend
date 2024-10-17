@@ -4,10 +4,8 @@ import (
 	"RestAPI/core"
 	"RestAPI/db"
 	"encoding/json"
-	"fmt"
 	"log"
-	"os"
-	"strconv"
+	"strings"
 )
 
 type User struct {
@@ -17,276 +15,200 @@ type User struct {
 /*
 docs(
 
+	name: CreateUserHandler;
 	tag: user;
-	name: CreateUser;
 	path: /user/create;
-	method: DELETE;
+	method: POST;
 	summary: Create a new user;
-	description: Create a new user with the given data;
-	isAuth: true;
+	description: Create a new user with the given data and save it to the database;
+	isAuth: false;
+	req_content_type:application/json;
+	requestbody: {
+		"username": "string",
+		"email": "string",
+		"password": "string"
+	};
+	resp_content_type: application/json;
+	responsebody: {
+		"username": "string",
+		"email": "string",
+	};
 
 )docs
 */
 func CreateUserHandler(request core.HttpRequest) core.HttpResponse {
 	if request.Method != "POST" {
-		return core.HTTP405
+		return *core.HTTP405.Copy()
 	}
-
-	jsonString := request.Body
 
 	user := new(User)
-
-	err := json.Unmarshal([]byte(jsonString), user)
+	err := json.Unmarshal([]byte(request.Body), user)
 	if err != nil {
-		response := core.HTTP400
-		response.Body = `{"Message": "Invalid JSON"}`
-		return response
+		log.Println("Error unmarshaling user:", err)
+		return *core.HTTP400.Copy()
 	}
 
-	otp := genareteOTP()
-	user.Otp = otp
+	// if request.FormData.Files != nil {
+	// 	for _, fileData := range request.FormData.Files["images"] {
+	// 		er := img.SaveFile(fileData.FileName, fileData.FileData)
+	// 		if er != nil {
+	// 			log.Println("Error saving file:", er)
+	// 			return *core.HTTP500.Copy()
+	// 		}
+	// 	}
+	// }
 
-	err = user.SendSMS(fmt.Sprintf("Your OTP is %s", otp))
+	user.PasswordHash, err = HashPassword(user.PasswordHash)
 	if err != nil {
-		log.Println("Error sending SMS:", err)
-		response := core.HTTP500
-		response.Body = `{"Message": "Internal server error"}`
-		return response
+		log.Println("Error hashing password:", err)
+		return *core.HTTP500.Copy()
 	}
+	result := db.DB.Create(user)
+	if result.Error != nil {
+		log.Println("Error creating user:", result.Error)
+		if strings.Contains(result.Error.Error(), `duplicate key value violates unique constraint "uni_users_email"`) {
+			resp := core.HTTP409.Copy()
+			resp.Body = `{"Message": "User with this email already exists"}`
+			return *resp
+		}
+		return *core.HTTP500.Copy()
+	}
+	user.PasswordHash = ""
 
-	response := core.HTTP201
-	response.Body = `{"Message": "User created, please verify"}`
-	return response
+	response := core.HTTP201.Copy()
+	err = response.Serialize(user)
+	if err != nil {
+		log.Println("Error serializing user:", err)
+		return *core.HTTP500.Copy()
+	}
+	return *response
 }
 
 /*
 docs(
 
-	name: VerifyUserHandler;
+	name: AuthUserHandler;
 	tag: user;
-	path: /user/verify;
-	method: GET;
+	path: /user/auth;
+	method: POST;
 	сontent_type: application/json;
-	summary: Verify user;
-	description: Verify user with the given data;
+	summary: Authentification user;
 	isAuth: false;
 	req_content_types: application/json;
 	requestbody: {
-		"mobile": "string",
-		"otp": "string"
+		"email": "string",
+		"password": "string"
 	};
 	resp_content_type: application/json;
 	responsebody: {
-		"Message": "User verified"
+		"access": "string",
+		"refresh": "string"
 	};
 
 )docs
 */
-func VerifyUserHandler(request core.HttpRequest) core.HttpResponse {
+func AuthUserHandler(request core.HttpRequest) core.HttpResponse {
 	if request.Method != "POST" {
-		return core.HTTP405
+		return *core.HTTP405.Copy()
 	}
-
-	if request.Body == "" {
-		response := core.HTTP400
-		response.Body = `{"Message": "Invalid JSON"}`
-		return response
-	}
-
-	jsonString := request.Body
-
-	tmpUser := new(User)
-
-	err := json.Unmarshal([]byte(jsonString), tmpUser)
+	reqUser := new(User)
+	err := json.Unmarshal([]byte(request.Body), reqUser)
 	if err != nil {
-		response := core.HTTP400
-		response.Body = `{"Message": "Invalid JSON"}`
-		return response
-	}
-
-	return core.HTTP200
-}
-
-/*
-docs(
-
-	name: CreateUserFormdataHandler;
-	tag: user;
-	path: /createUserForm;
-	method: POST;
-	summary: Create a new user with form data;
-	description: Create a new user with the given data and images;
-	isAuth: false;
-	req_content_type: multipart/form-data, application/json;
-	requestbody: {
-		"name": "string",
-		"surname": "string",
-		"mobile": "string",
-		"email": "string",
-		"age": "int"
-		"images": "file"
-	};
-	resp_content_type: application/json;
-	responsebody: {
-		"name": "string",
-		"surname": "string",
-		"mobile": "string",
-		"email": "string",
-		"age": "int"
-	};
-
-)docs
-*/
-func CreateUserFormdataHandler(request core.HttpRequest) core.HttpResponse {
-	if request.Method != "POST" {
-		return core.HTTP405
+		log.Println("Error unmarshaling user:", err)
+		return *core.HTTP400.Copy()
 	}
 
 	user := new(User)
 
-	user.Mobile = request.FormData.Fields["mobile"]
-	user.Name = request.FormData.Fields["name"]
-	user.Surname = request.FormData.Fields["surname"]
-	user.Email = request.FormData.Fields["email"]
+	result := db.DB.Where("email = ?", reqUser.Email).First(user)
+	if result.Error != nil {
+		log.Println("Error finding user:", result.Error)
+		return *core.HTTP500.Copy()
+	}
+	if !CheckPassword(user.PasswordHash, reqUser.PasswordHash) {
+		return *core.HTTP401.Copy()
+	}
 
-	age, err := strconv.Atoi(request.FormData.Fields["age"])
+	accessToken, err := GenerateAccessToken(user.Username, user.Email)
 	if err != nil {
-		log.Println("Age convertation error:", err)
-		return core.HTTP400
+		log.Println("Error generating access token:", err)
+		return *core.HTTP500.Copy()
 	}
-	user.Age = age
-
-	saveFile := func(filename string, fileData []byte) error {
-		currentDir, er := os.Getwd()
-		filePath := currentDir + core.IMAGES_DIR + "/" + filename
-		if er != nil {
-			return er
-		}
-		if _, err := os.Stat(currentDir + core.IMAGES_DIR); os.IsNotExist(err) {
-			err := os.MkdirAll(currentDir+core.IMAGES_DIR, 0755)
-			if err != nil {
-				return err
-			}
-		}
-
-		file, er := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0666)
-		if er != nil {
-			return er
-		}
-		defer file.Close()
-
-		_, er = file.Write(fileData)
-		if er != nil {
-			return er
-		}
-		return nil
-	}
-
-	for _, fileData := range request.FormData.Files["images"] {
-		er := saveFile(fileData.FileName, fileData.FileData)
-		if er != nil {
-			log.Println("Error saving file:", er)
-			return core.HTTP500
-		}
-	}
-
-	jsonData, err := json.Marshal(user)
+	refreshToken, err := GenerateRefreshToken(user.Username, user.Email)
 	if err != nil {
-		log.Println("Error marshaling user:", err)
-		return core.HTTP500
+		log.Println("Error generating refresh token:", err)
+		return *core.HTTP500.Copy()
 	}
-	response := core.HTTP201
-	response.Body = string(jsonData)
-	return response
+
+	tokens := &db.Token{
+		UserID:           user.ID,
+		AccessTokenHash:  accessToken,
+		RefreshTokenHash: refreshToken,
+	}
+
+	result = db.DB.Save(tokens)
+	if result.Error != nil {
+		log.Println("Error creating token:", result.Error)
+		return *core.HTTP500.Copy()
+	}
+	user.IsActive = true
+	result = db.DB.Save(user)
+	if result.Error != nil {
+		log.Println("Error saving user:", result.Error)
+		return *core.HTTP500.Copy()
+	}
+
+	response := core.HTTP200.Copy()
+	err = response.Serialize(tokens)
+	if err != nil {
+		log.Println("Error serializing tokens:", err)
+		return *core.HTTP500.Copy()
+	}
+
+	return *response
 }
 
-func ImageHandler(request core.HttpRequest) core.HttpResponse {
+/*
+docs(
+
+	name: GetUserHandler;
+	tag: user;
+	path: /user/get;
+	method: GET;
+	summary: Get user by id;
+	description: Get user by id from the database;
+	isAuth: true;
+	resp_content_type: application/json;
+	responsebody: {
+		"username": "string",
+		"email": "string",
+	};
+
+)docs
+*/
+func GetUserHandler(request core.HttpRequest) core.HttpResponse {
 	if request.Method != "GET" {
-		return core.HTTP405
+		return *core.HTTP405.Copy()
+	}
+	user := new(User)
+
+	result := db.DB.Where("id = ?", request.Query["id"]).First(user)
+	if result.Error != nil {
+		log.Println("Error finding user:", result.Error)
+		if strings.Contains(result.Error.Error(), "record not found") {
+			return *core.HTTP404.Copy()
+		}
+		return *core.HTTP500.Copy()
 	}
 
-	currentDir, er := os.Getwd()
-	if er != nil {
-		log.Println("Error getting current directory:", er)
-		return core.HTTP500
-	}
+	user.PasswordHash = ""
+	user.Tokens = nil
 
-	filename := request.Query["filename"]
-
-	filePath := currentDir + core.IMAGES_DIR + "/" + filename
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return core.HTTP404
-	}
-
-	fileData, err := os.ReadFile(filePath)
+	response := core.HTTP200.Copy()
+	err := response.Serialize(user)
 	if err != nil {
-		log.Println("Error reading file:", err)
-		return core.HTTP500
+		log.Println("Error serializing user:", err)
+		return *core.HTTP500.Copy()
 	}
-
-	response := core.HTTP200
-	response.Body = string(fileData)
-	response.SetHeader("Content-Type", "image/jpeg")
-	return response
+	return *response
 }
-
-/*
-docs(
-
-	name: Test;
-	tag: user;
-	path: /user/dasda;
-	method: POST;
-	summary: Create a new user with form data;
-	description: Create a new user with the given data and images;
-	isAuth: false;
-	req_content_type: multipart/form-data, application/json, application/x-www-form-urlencoded;
-	requestbody: {
-		"name": "string",
-		"surname": "string",
-		"mobile": "string",
-		"email": "string",
-		"age": "int"
-	};
-	resp_content_type: application/json;
-	responsebody: {
-		"name": "string",
-		"surname": "string",
-		"mobile": "string",
-		"email": "string",
-		"age": "int"
-	};
-
-)docs
-*/
-
-/*
-docs(
-
-	name: Test2;
-	tag: user;
-	path: /user/daedassda;
-	method: POST;
-	summary: Create a new user with form data;
-	description: Create a new user with the given data and images;
-	isAuth: false;
-	req_content_type: multipart/form-data, application/json;
-	requestbody: {
-		"img": "file",
-		"name": "string",
-		"surname": "string",
-		"mobile": "string",
-		"email": "string",
-		"age": "int"
-	};
-	resp_content_type: application/json;
-	responsebody: {
-		"name": "string",
-		"surname": "string",
-		"mobile": "string",
-		"email": "string",
-		"age": "int"
-	};
-
-)docs
-*/
