@@ -42,6 +42,8 @@ const (
 	IS_ALLOWED_HOSTS bool = true
 	REQ_MIDDLEWARE   bool = true
 	KEEP_ALIVE       bool = true
+	// Настройки таймаутов для запросов
+	AUTH_TIMEOUT time.Duration = time.Minute * 1
 )
 
 /*
@@ -107,6 +109,7 @@ var (
 	MAIL_USER     string = "main@pixel-team.ru"
 	MAIL_PASSWORD string
 	OTP_EXP_TIME  time.Duration = time.Minute * 5
+	OTP_TIMEOUT   time.Duration = time.Minute * 1
 )
 
 /*

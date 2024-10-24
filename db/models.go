@@ -18,25 +18,29 @@ var autoMigrateModels = []any{
 // Create our models here
 type User struct {
 	gorm.Model
-	Username     string     `json:"username" gorm:"size:64;not null"`
-	IsActive     bool       `json:"is_active" gorm:"default:false"`
-	Email        string     `json:"email" gorm:"size:256;not null;unique"`
-	Otp          int        `json:"otp,omitempty"`
-	OtpExpires   *time.Time `json:"otp_expires,omitempty" gorm:"autoUpdateTime"`
-	PasswordHash string     `json:"password,omitempty" gorm:"size:256;not null"`
-	Tokens       *Token     `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Image        []Image    `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Username    string     `json:"username" gorm:"size:64;not null"`
+	IsActive    bool       `json:"is_active" gorm:"default:false"`
+	Email       string     `json:"email" gorm:"size:256;not null;unique"`
+	Otp         int        `json:"otp,omitempty"`
+	OtpExpires  *time.Time `json:"otp_expires,omitempty" gorm:"autoUpdateTime"`
+	OtpTries    int        `json:"-" gorm:"default:0"`
+	OtpTimeout  *time.Time `json:"-" gorm:"type:timestamp"`
+	AuthTries   int        `json:"-" gorm:"default:0"`
+	AuthTimeout *time.Time `json:"-" gorm:"type:timestamp"`
+	Password    string     `json:"password,omitempty" gorm:"size:256;not null"`
+	Tokens      *Token     `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Image       []Image    `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type Token struct {
-	gorm.Model
+	ID           uint `json:"-" gorm:"primaryKey"`
 	UserID       uint
 	AccessToken  string `gorm:"size:256"`
 	RefreshToken string `gorm:"size:256"`
 }
 
 type Image struct {
-	gorm.Model
+	ID       uint
 	UserID   uint
 	ImageURL string
 }

@@ -10,6 +10,7 @@ import (
 	Функция InitHandler() - инициализация списка представлений
 	После создания представлений их необходимо зарегистрировать в этой функции, чтобы они были доступны для обработки запросов
 	Для регистрации нужно передать url, по которому будет доступно представление, указатель на функцию-обработчик и имя предсталвения(оно должно совпадать с именем в документации для корректной работы)
+	При регистрации роута можно использовать плейсхолдеры вида {int:<int>} или {<string>} для передачи параметров в запросе
 	Роутер выдаст указатель на функцию, которая будет обрабатывать запрос или nil, если функции не нашлось
 */
 
@@ -22,5 +23,6 @@ func InitHandlers() {
 	registerHandler("/user/send_otp", user.SendOtpHandler, "sendOtp")
 	registerHandler("/user/activate", user.ActivateAccountHandler, "activateUser")
 	registerHandler("/user/auth", user.AuthUserHandler, "verifyUser")
-	registerHandler("/user/get/{int}", user.GetUserHandler, "getUser")
+	registerHandler("/user/get/{int:ID}", user.GetUserHandler, "getUser")
+	registerHandler("/user/update", user.UpdateUserHandler, "updateUser")
 }

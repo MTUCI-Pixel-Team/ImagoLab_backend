@@ -132,6 +132,16 @@ var (
 		},
 		Body: `{"Message": "Unsupported Media Type"}`,
 	}
+	HTTP429 = HttpResponse{
+		Version: "HTTP/1.1",
+		Status:  429,
+		Reason:  "Too Many Requests",
+		Headers: map[string]string{
+			"Content-Type":   "application/json",
+			"Content-Length": strconv.Itoa(len(`{"Message": "Too Many Requests"}`)),
+		},
+		Body: `{"Message": "Too Many Requests"}`,
+	}
 	HTTP500 = HttpResponse{
 		Version: "HTTP/1.1",
 		Status:  500,

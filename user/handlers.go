@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -26,14 +27,19 @@ docs(
 	isAuth: false;
 	req_content_type:application/json;
 	requestbody: {
-		"username": "string",
-		"email": "string",
-		"password": "string"
+		"username*": "string",
+		"email*": "string",
+		"password*": "string"
 	};
 	resp_content_type: application/json;
 	responsebody: {
+		"ID": int,
+		"CreatedAt": "time",
+		"UpdatedAt": "time",
+		"DeletedAt": time,
 		"username": "string",
-		"email": "string",
+		"is_active": bool,
+		"email": "string"
 	};
 
 )docs
@@ -49,8 +55,11 @@ func CreateUserHandler(request core.HttpRequest) core.HttpResponse {
 		log.Println("Error unmarshaling user:", err)
 		return *core.HTTP400.Copy()
 	}
+	if user.Username == "" || user.Email == "" || user.Password == "" {
+		return *core.HTTP400.Copy()
+	}
 
-	user.PasswordHash, err = HashPassword(user.PasswordHash)
+	user.Password, err = HashPassword(user.Password)
 	if err != nil {
 		log.Println("Error hashing password:", err)
 		return *core.HTTP500.Copy()
@@ -65,7 +74,7 @@ func CreateUserHandler(request core.HttpRequest) core.HttpResponse {
 		}
 		return *core.HTTP500.Copy()
 	}
-	user.PasswordHash = ""
+	user.Password = ""
 
 	response := core.HTTP201.Copy()
 	err = response.Serialize(user)
@@ -88,7 +97,7 @@ docs(
 	isAuth: false;
 	req_content_type:application/json;
 	requestbody: {
-		"email": "string"
+		"email*": "string"
 	};
 	resp_content_type: application/json;
 	responsebody: {
@@ -108,6 +117,9 @@ func SendOtpHandler(request core.HttpRequest) core.HttpResponse {
 		log.Println("Error unmarshaling user:", err)
 		return *core.HTTP400.Copy()
 	}
+	if reqData.Email == "" {
+		return *core.HTTP400.Copy()
+	}
 
 	user := new(User)
 	result := db.DB.Where("email = ?", reqData.Email).First(user)
@@ -122,6 +134,12 @@ func SendOtpHandler(request core.HttpRequest) core.HttpResponse {
 	if user.IsActive {
 		resp := core.HTTP409.Copy()
 		resp.Body = `{"Message": "User is already activated"}`
+		return *resp
+	}
+
+	if user.OtpTimeout != nil && user.OtpTimeout.After(time.Now()) {
+		resp := core.HTTP429.Copy()
+		resp.Body = `{"Message": "Too many requests"}`
 		return *resp
 	}
 
@@ -162,8 +180,8 @@ docs(
 	isAuth: false;
 	req_content_type: application/json;
 	requestbody: {
-		"email": "string",
-		"activation_code": int
+		"email*": "string",
+		"otp*": int
 	};
 	resp_content_type: application/json;
 	responsebody: {
@@ -182,6 +200,9 @@ func ActivateAccountHandler(request core.HttpRequest) core.HttpResponse {
 		log.Println("Error unmarshaling user:", err)
 		return *core.HTTP400.Copy()
 	}
+	if reqData.Email == "" {
+		return *core.HTTP400.Copy()
+	}
 
 	user := new(User)
 
@@ -193,21 +214,52 @@ func ActivateAccountHandler(request core.HttpRequest) core.HttpResponse {
 		}
 		return *core.HTTP500.Copy()
 	}
-	fmt.Println("user", user)
-	fmt.Println("reqData", reqData)
 
 	if user.IsActive {
 		resp := core.HTTP409.Copy()
 		resp.Body = `{"Message": "User is already activated"}`
 		return *resp
 	}
-	if user.Otp != reqData.Otp || !user.OtpExpires.Before(time.Now()) {
+
+	if user.OtpTimeout != nil {
+		if user.OtpTimeout.Before(time.Now()) {
+			resp := core.HTTP429.Copy()
+			resp.Body = fmt.Sprintf(`{"Message": "Too many requests, timeout:%d seconds"}`, int64(user.OtpTimeout.Sub(time.Now()).Seconds()))
+			return *resp
+		}
+	}
+
+	if user.OtpExpires != nil {
+		if user.OtpExpires.After(time.Now()) {
+			resp := core.HTTP409.Copy()
+			resp.Body = `{"Message": "Activation code expired"}`
+			return *resp
+		}
+	}
+
+	if user.Otp != reqData.Otp {
+		if user.OtpTries == 5 {
+			user.OtpTimeout = new(time.Time)
+			*user.OtpTimeout = time.Now().Add(core.OTP_TIMEOUT)
+		} else if user.OtpTries == 7 {
+			*user.OtpTimeout = time.Now().Add(core.OTP_TIMEOUT * 5)
+		} else if user.OtpTries == 10 {
+			*user.OtpTimeout = time.Now().Add(core.OTP_TIMEOUT * 10)
+		} else if user.OtpTries%5 == 0 {
+			*user.OtpTimeout = time.Now().Add(core.OTP_TIMEOUT * 30)
+		}
+		user.OtpTries++
 		resp := core.HTTP409.Copy()
 		resp.Body = `{"Message": "Invalid activation code"}`
 		return *resp
+	} else {
+		user.IsActive = true
+		user.Otp = 0
+		user.OtpTimeout = nil
+		user.OtpExpires = nil
+		user.OtpTries = 0
 	}
 
-	user.IsActive = true
 	result = db.DB.Save(user)
 	if result.Error != nil {
 		log.Println("Error saving user:", result.Error)
@@ -231,13 +283,17 @@ docs(
 	isAuth: false;
 	req_content_types: application/json;
 	requestbody: {
-		"email": "string",
-		"password": "string"
+		"email*": "string",
+		"password*": "string"
 	};
 	resp_content_type: application/json;
 	responsebody: {
-		"access": "string",
-		"refresh": "string"
+		"CreatedAt": time,
+		"UpdatedAt": time,
+		"DeletedAt": time,
+		"UserID": int,
+		"AccessToken": "string",
+		"RefreshToken": "string"
 	};
 
 )docs
@@ -250,6 +306,9 @@ func AuthUserHandler(request core.HttpRequest) core.HttpResponse {
 	err := json.Unmarshal([]byte(request.Body), reqUser)
 	if err != nil {
 		log.Println("Error unmarshaling user:", err)
+		return *core.HTTP400.Copy()
+	}
+	if reqUser.Email == "" || reqUser.Password == "" {
 		return *core.HTTP400.Copy()
 	}
 
@@ -272,10 +331,32 @@ func AuthUserHandler(request core.HttpRequest) core.HttpResponse {
 		return *resp
 	}
 
-	if !CheckPassword(user.PasswordHash, reqUser.PasswordHash) {
+	if user.AuthTimeout != nil {
+		if user.AuthTimeout.After(time.Now()) {
+			resp := core.HTTP429.Copy()
+			resp.Body = fmt.Sprintf(`{"Message": "Too many requests, timeout:%d seconds"}`, int64(user.AuthTimeout.Sub(time.Now()).Seconds()))
+			return *resp
+		}
+	}
+
+	if !CheckPassword(user.Password, reqUser.Password) {
+		if user.AuthTries == 3 {
+			user.AuthTimeout = new(time.Time)
+			*user.AuthTimeout = time.Now().Add(core.AUTH_TIMEOUT)
+		} else if user.AuthTries == 5 {
+			*user.AuthTimeout = time.Now().Add(core.AUTH_TIMEOUT * 5)
+		} else if user.AuthTries == 8 {
+			*user.AuthTimeout = time.Now().Add(core.AUTH_TIMEOUT * 10)
+		} else if user.AuthTries%5 == 0 {
+			*user.AuthTimeout = time.Now().Add(core.AUTH_TIMEOUT * 30)
+		}
+		user.AuthTries++
 		resp := core.HTTP401.Copy()
 		resp.Body = `{"Message": "Invalid email or password"}`
 		return *resp
+	} else {
+		user.AuthTries = 0
+		user.AuthTimeout = nil
 	}
 
 	accessToken, err := GenerateAccessToken(user.Username, user.Email)
@@ -316,29 +397,39 @@ docs(
 
 	name: GetUserHandler;
 	tag: user;
-	path: /user/get;
+	path: /user/get/{int:ID};
 	method: GET;
 	summary: Get user by id;
 	description: Get user by id from the database;
-	isAuth: true;
+	isAuth: false;
 	resp_content_type: application/json;
 	responsebody: {
+		"ID": int,
+		"CreatedAt": "time",
+		"UpdatedAt": "time",
+		"DeletedAt": time,
 		"username": "string",
-		"email": "string",
+		"is_active": bool,
+		"email": "string"
 	};
 
 )docs
 */
 func GetUserHandler(request core.HttpRequest) core.HttpResponse {
-	if request.User != nil {
-		fmt.Println(request.User)
-	}
 	if request.Method != "GET" {
 		return *core.HTTP405.Copy()
 	}
+
+	id := strings.TrimPrefix(request.Url, "/user/get/")
+	userId, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println("Error converting id:", err)
+		return *core.HTTP400.Copy()
+	}
+
 	user := new(User)
 
-	result := db.DB.Where("id = ?", request.Query["id"]).First(user)
+	result := db.DB.Where("id = ?", userId).First(user)
 	if result.Error != nil {
 		log.Println("Error finding user:", result.Error)
 		if strings.Contains(result.Error.Error(), "record not found") {
@@ -349,12 +440,85 @@ func GetUserHandler(request core.HttpRequest) core.HttpResponse {
 
 	user.Otp = 0
 	user.OtpExpires = nil
-	user.PasswordHash = ""
+	user.Password = ""
 	user.Tokens = nil
 	user.Image = nil
 
 	response := core.HTTP200.Copy()
-	err := response.Serialize(user)
+	err = response.Serialize(user)
+	if err != nil {
+		log.Println("Error serializing user:", err)
+		return *core.HTTP500.Copy()
+	}
+	return *response
+}
+
+/*
+docs(
+
+	name: UpdateUserHandler;
+	tag: user;
+	path: /user/update;
+	method: POST;
+	summary: Update user;
+	description: Update user with the given data and save it to the database;
+	isAuth: true;
+	req_content_type:application/json;
+	requestbody: {
+		"username": "string",
+		"email": "string"
+	};
+	resp_content_type: application/json;
+	responsebody: {
+		"ID": int,
+		"CreatedAt": "time",
+		"UpdatedAt": "time",
+		"DeletedAt": time,
+		"username": "string",
+		"is_active": bool,
+		"email": "string"
+	};
+
+)docs
+*/
+func UpdateUserHandler(request core.HttpRequest) core.HttpResponse {
+	if request.Method != "POST" {
+		return *core.HTTP405.Copy()
+	}
+	if request.User == nil {
+		return *core.HTTP401.Copy()
+	}
+	reqUser := request.User.(*db.User)
+
+	user := new(User)
+	err := json.Unmarshal([]byte(request.Body), user)
+	if err != nil {
+		log.Println("Error unmarshaling user:", err)
+		return *core.HTTP400.Copy()
+	}
+
+	if user.Username != "" {
+		reqUser.Username = user.Username
+	}
+
+	if user.Email != "" {
+		reqUser.Email = user.Email
+	}
+
+	result := db.DB.Save(reqUser)
+	if result.Error != nil {
+		log.Println("Error saving user:", result.Error)
+		return *core.HTTP500.Copy()
+	}
+
+	reqUser.Password = ""
+	reqUser.Otp = 0
+	reqUser.OtpExpires = nil
+	reqUser.Tokens = nil
+	reqUser.Image = nil
+
+	response := core.HTTP200.Copy()
+	err = response.Serialize(reqUser)
 	if err != nil {
 		log.Println("Error serializing user:", err)
 		return *core.HTTP500.Copy()
