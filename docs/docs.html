@@ -26,77 +26,6 @@
 
                 <div class="route-block">
 
-                    <div class="route-header get">
-                        <div class="route-type">
-                            <span class="method get">GET</span>
-                            /user/get
-                        </div>
-                        <div>
-                            
-                            <span class="auth-required">🔒</span>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        
-                        <p><strong>Summary:</strong> Get user by id</p>
-                        
-                        
-                        <p><strong>Description:</strong> Get user by id from the database</p>
-                        
-                        
-
-
-                        <button class="try-it-out get">Try it out</button>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-GetUserHandler" class="request-form" data-url="/user/get">
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button get">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;username&#34;: &#34;string&#34;,
-	&#34;email&#34;: &#34;string&#34;,
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
                     <div class="route-header post">
                         <div class="route-type">
                             <span class="method post">POST</span>
@@ -214,6 +143,223 @@
                     <div class="route-header post">
                         <div class="route-type">
                             <span class="method post">POST</span>
+                            /user/send_otp
+                        </div>
+                        <div>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Send activation code</p>
+                        
+                        
+                        <p><strong>Description:</strong> Send activation code to the user&#39;s email</p>
+                        
+                        
+
+                        <div class="type-selection">
+                            <h4>Request body:</h4>
+                            <label for="content-type-SendOtpHandler">Select Content Type:</label>
+                            <select id="content-type-SendOtpHandler" name="content-type">
+                                
+                                <option value="application/json">application/json</option>
+                                
+                            </select><br>
+                        </div>
+
+                        
+
+
+                        <button class="try-it-out post">Try it out</button>
+
+                        
+
+                        <div class="example-value">
+                            <p>Example value</p>
+                            
+                            <div class="json-example json-example-SendOtpHandler">
+                                <pre>{
+	&#34;email&#34;: &#34;string&#34;
+}
+</pre>
+                            </div>
+                            
+                            
+
+                        </div>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-SendOtpHandler" class="request-form" data-url="/user/send_otp">
+
+                                
+
+                                <textarea id="json-input-SendOtpHandler" name="json-body" placeholder='{
+	&#34;email&#34;: &#34;string&#34;
+}
+'
+                                    style="display: none;" required>{
+	&#34;email&#34;: &#34;string&#34;
+}
+</textarea>
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;Message&#34;: &#34;string&#34;
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                <div class="route-block">
+
+                    <div class="route-header post">
+                        <div class="route-type">
+                            <span class="method post">POST</span>
+                            /user/activate
+                        </div>
+                        <div>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Activate user account</p>
+                        
+                        
+                        <p><strong>Description:</strong> Activate user account by activation code</p>
+                        
+                        
+
+                        <div class="type-selection">
+                            <h4>Request body:</h4>
+                            <label for="content-type-ActivateAccount">Select Content Type:</label>
+                            <select id="content-type-ActivateAccount" name="content-type">
+                                
+                                <option value="application/json">application/json</option>
+                                
+                            </select><br>
+                        </div>
+
+                        
+
+
+                        <button class="try-it-out post">Try it out</button>
+
+                        
+
+                        <div class="example-value">
+                            <p>Example value</p>
+                            
+                            <div class="json-example json-example-ActivateAccount">
+                                <pre>{
+	&#34;email&#34;: &#34;string&#34;,
+	&#34;activation_code&#34;: int
+}
+</pre>
+                            </div>
+                            
+                            
+
+                        </div>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-ActivateAccount" class="request-form" data-url="/user/activate">
+
+                                
+
+                                <textarea id="json-input-ActivateAccount" name="json-body" placeholder='{
+	&#34;email&#34;: &#34;string&#34;,
+	&#34;activation_code&#34;: int
+}
+'
+                                    style="display: none;" required>{
+	&#34;email&#34;: &#34;string&#34;,
+	&#34;activation_code&#34;: int
+}
+</textarea>
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;Message&#34;: &#34;string&#34;
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                <div class="route-block">
+
+                    <div class="route-header post">
+                        <div class="route-type">
+                            <span class="method post">POST</span>
                             /user/auth
                         </div>
                         <div>
@@ -302,6 +448,77 @@
                                     <pre>{
 	&#34;access&#34;: &#34;string&#34;,
 	&#34;refresh&#34;: &#34;string&#34;
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                <div class="route-block">
+
+                    <div class="route-header get">
+                        <div class="route-type">
+                            <span class="method get">GET</span>
+                            /user/get
+                        </div>
+                        <div>
+                            
+                            <span class="auth-required">🔒</span>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Get user by id</p>
+                        
+                        
+                        <p><strong>Description:</strong> Get user by id from the database</p>
+                        
+                        
+
+
+                        <button class="try-it-out get">Try it out</button>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-GetUserHandler" class="request-form" data-url="/user/get">
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button get">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;username&#34;: &#34;string&#34;,
+	&#34;email&#34;: &#34;string&#34;,
 }
 </pre>
                                 </div>

@@ -19,6 +19,8 @@ func InitHandlers() {
 	registerHandler("/api/docs/templates/js/script.js", docs.GetDocsJS, "docs")
 	registerHandler("/images", media.ImageHandler, "images")
 	registerHandler("/user/create", user.CreateUserHandler, "createUser")
+	registerHandler("/user/send_otp", user.SendOtpHandler, "sendOtp")
+	registerHandler("/user/activate", user.ActivateAccountHandler, "activateUser")
 	registerHandler("/user/auth", user.AuthUserHandler, "verifyUser")
-	registerHandler("/user/get", user.GetUserHandler, "getUser")
+	registerHandler("/user/get/{int}", user.GetUserHandler, "getUser")
 }

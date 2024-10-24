@@ -89,29 +89,41 @@ var (
 	JWT_REFRESH_EXPIRATION_TIME time.Duration = time.Hour * 336
 )
 
-// /*
-// MTS API KEY
-// */
+/*
+Firebase settings
+*/
 var (
-	MTS_API_KEY    string
-	MTS_API_NUMBER string
+	FIREBASE_API_KEY string
+	RECAPTCHA_KEY    string
+	PROJECT_ID       string = "imagolab-1729380577888"
+)
+
+/*
+MAIL SETTINGS
+*/
+var (
+	MAIL_HOST     string = "mail.hosting.reg.ru"
+	MAIL_PORT     int    = 465
+	MAIL_USER     string = "main@pixel-team.ru"
+	MAIL_PASSWORD string
+	OTP_EXP_TIME  time.Duration = time.Minute * 5
 )
 
 /*
 инициализация переменных окружения
 */
-func InitEnv() error {
-	err := godotenv.Load()
+func InitEnv(paths ...string) error {
+	var err error
+	if len(paths) > 0 {
+		err = godotenv.Load(paths...)
+	} else {
+		err = godotenv.Load()
+	}
 	if err != nil {
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
-	MTS_API_KEY = os.Getenv("MTS_API_KEY")
-	MTS_API_NUMBER = os.Getenv("MTS_API_NUMBER")
-	if MTS_API_KEY == "" || MTS_API_NUMBER == "" {
-		log.Fatalf("Error env load %v", err)
-		return err
-	}
+
 	JWT_ACCESS_SECRET_KEY = os.Getenv("JWT_ACCESS_SECRET_KEY")
 	JWT_REFRESH_SECRET_KEY = os.Getenv("JWT_REFRESH_SECRET_KEY")
 	if JWT_ACCESS_SECRET_KEY == "" || JWT_REFRESH_SECRET_KEY == "" {
@@ -121,6 +133,19 @@ func InitEnv() error {
 
 	DB_CREDENTIALS.Password = os.Getenv("DB_PASSWORD")
 	if DB_CREDENTIALS.Password == "" {
+		log.Fatalf("Error env load %v", err)
+		return err
+	}
+
+	FIREBASE_API_KEY = os.Getenv("FIREBASE_API_KEY")
+	RECAPTCHA_KEY = os.Getenv("RECAPTCHA_KEY")
+	if FIREBASE_API_KEY == "" || RECAPTCHA_KEY == "" {
+		log.Fatalf("Error env load %v", err)
+		return err
+	}
+
+	MAIL_PASSWORD = os.Getenv("MAIL_PASSWORD")
+	if MAIL_PASSWORD == "" {
 		log.Fatalf("Error env load %v", err)
 		return err
 	}

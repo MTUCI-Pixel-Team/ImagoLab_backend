@@ -20,6 +20,7 @@ type HttpRequest struct {
 	Query    map[string]string
 	Version  string
 	Headers  map[string]string
+	User     interface{}
 	Body     string
 	FormData *FormData
 }

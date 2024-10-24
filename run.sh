@@ -47,7 +47,12 @@ elif [ "$1" = "migrate" ]; then
     if [ "$2" = "-rollback" ]; then
         run_migrate_rollback
     else
-        run_migrate
+        if [ "$2" = "" ]; then
+            run_migrate
+        else
+            echo "Invalid argument."
+            exit 1
+        fi
     fi
 else
     build_and_run_server
