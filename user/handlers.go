@@ -3,6 +3,7 @@ package user
 import (
 	"RestAPI/core"
 	"RestAPI/db"
+	"RestAPI/media"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -442,7 +443,6 @@ func GetUserHandler(request core.HttpRequest) core.HttpResponse {
 	user.OtpExpires = nil
 	user.Password = ""
 	user.Tokens = nil
-	user.Image = nil
 
 	response := core.HTTP200.Copy()
 	err = response.Serialize(user)
@@ -459,14 +459,17 @@ docs(
 	name: UpdateUserHandler;
 	tag: user;
 	path: /user/update;
-	method: POST;
+	method: PATCH;
 	summary: Update user;
 	description: Update user with the given data and save it to the database;
 	isAuth: true;
-	req_content_type:application/json;
+	req_content_type: multipart/form-data;
 	requestbody: {
 		"username": "string",
-		"email": "string"
+		"email": "string",
+		"file": "avatar",
+		"new_password": "string",
+		"old_password": "string"
 	};
 	resp_content_type: application/json;
 	responsebody: {
@@ -482,7 +485,7 @@ docs(
 )docs
 */
 func UpdateUserHandler(request core.HttpRequest) core.HttpResponse {
-	if request.Method != "POST" {
+	if request.Method != "PATCH" {
 		return *core.HTTP405.Copy()
 	}
 	if request.User == nil {
@@ -490,19 +493,39 @@ func UpdateUserHandler(request core.HttpRequest) core.HttpResponse {
 	}
 	reqUser := request.User.(*db.User)
 
-	user := new(User)
-	err := json.Unmarshal([]byte(request.Body), user)
-	if err != nil {
-		log.Println("Error unmarshaling user:", err)
-		return *core.HTTP400.Copy()
-	}
-
-	if user.Username != "" {
-		reqUser.Username = user.Username
-	}
-
-	if user.Email != "" {
-		reqUser.Email = user.Email
+	if request.FormData != nil {
+		if request.FormData.Fields["username"] != "" {
+			reqUser.Username = request.FormData.Fields["username"]
+		}
+		if request.FormData.Fields["email"] != "" {
+			reqUser.Email = request.FormData.Fields["email"]
+		}
+		if request.FormData.Fields["new_password"] != "" && request.FormData.Fields["old_password"] != "" {
+			if !CheckPassword(reqUser.Password, request.FormData.Fields["old_password"]) {
+				return *core.HTTP401.Copy()
+			}
+			newPass, err := HashPassword(request.FormData.Fields["new_password"])
+			if err != nil {
+				log.Println("Error hashing password:", err)
+				return *core.HTTP500.Copy()
+			}
+			reqUser.Password = newPass
+		}
+		if len(request.FormData.Files["avatar"]) > 0 {
+			filename, err := media.SaveFile(request.FormData.Files["avatar"][0].FileData, reqUser.ID)
+			if err != nil {
+				log.Println("Error saving file:", err)
+				return *core.HTTP500.Copy()
+			}
+			if reqUser.Avatar != "" {
+				err := media.DeleteFile(strings.TrimPrefix(reqUser.Avatar, "/images/"))
+				if err != nil {
+					log.Println("Error deleting file:", err)
+					return *core.HTTP500.Copy()
+				}
+			}
+			reqUser.Avatar = "/images/" + filename
+		}
 	}
 
 	result := db.DB.Save(reqUser)
@@ -515,13 +538,191 @@ func UpdateUserHandler(request core.HttpRequest) core.HttpResponse {
 	reqUser.Otp = 0
 	reqUser.OtpExpires = nil
 	reqUser.Tokens = nil
-	reqUser.Image = nil
 
 	response := core.HTTP200.Copy()
-	err = response.Serialize(reqUser)
+	err := response.Serialize(reqUser)
 	if err != nil {
 		log.Println("Error serializing user:", err)
 		return *core.HTTP500.Copy()
 	}
+	return *response
+}
+
+/*
+docs(
+
+	name: SendResetPasswordMailHandler;
+	tag: user;
+	path: /user/send_reset_password_mail;
+	method: POST;
+	summary: Send mail for reset password;
+	description: Send mail with reset code to the user's email;
+	isAuth: false;
+	req_content_type:application/json;
+	requestbody: {
+		"email*": "string"
+	};
+	resp_content_type: application/json;
+	responsebody: {
+		"Message": "string"
+	};
+
+)docs
+*/
+func SendResetPasswordMailHandler(request core.HttpRequest) core.HttpResponse {
+	if request.Method != "POST" {
+		return *core.HTTP405.Copy()
+	}
+	reqUser := new(User)
+	err := json.Unmarshal([]byte(request.Body), reqUser)
+	if err != nil {
+		log.Println("Error unmarshaling user:", err)
+		return *core.HTTP400.Copy()
+	}
+	if reqUser.Email == "" {
+		return *core.HTTP400.Copy()
+	}
+
+	result := db.DB.Where("email = ?", reqUser.Email).First(reqUser)
+	if result.Error != nil {
+		log.Println("Error finding user:", result.Error)
+		if strings.Contains(result.Error.Error(), "record not found") {
+			return *core.HTTP404.Copy()
+		}
+		return *core.HTTP500.Copy()
+	}
+
+	if reqUser.ResetTimeout != nil {
+		if reqUser.ResetTimeout.After(time.Now()) {
+			resp := core.HTTP429.Copy()
+			resp.Body = fmt.Sprintf(`{"Message": "Too many requests, timeout:%d seconds"}`, int64(reqUser.ResetTimeout.Sub(time.Now()).Seconds()))
+			return *resp
+		}
+	}
+
+	resetCode, err := generateSecureToken()
+	if err != nil {
+		log.Println("Error generating reset code:", err)
+		return *core.HTTP500.Copy()
+	}
+
+	reqUser.ResetToken = resetCode
+	reqUser.ResetExpires = new(time.Time)
+	*reqUser.ResetExpires = time.Now().Add(core.OTP_EXP_TIME)
+
+	result = db.DB.Save(reqUser)
+	if result.Error != nil {
+		log.Println("Error saving user:", result.Error)
+		return *core.HTTP500.Copy()
+	}
+
+	err = SendResetPasswordEmail(reqUser.Email, resetCode)
+	if err != nil {
+		log.Println("Error sending email:", err)
+		return *core.HTTP500.Copy()
+	}
+
+	response := core.HTTP200.Copy()
+	response.Body = `{"Message": "Reset code sent"}`
+	return *response
+}
+
+/*
+docs(
+
+	name: ResetPasswordHandler;
+	tag: user;
+	path: /user/reset_password;
+	method: POST;
+	summary: Reset password;
+	description: Reset password by reset code;
+	isAuth: false;
+	req_content_type: application/json;
+	requestbody: {
+		"email*": "string",
+		"reset_token*": string,
+		"password*": "string"
+	};
+	resp_content_type: application/json;
+	responsebody: {
+		"Message": "string"
+	};
+
+)docs
+*/
+func ResetPasswordHandler(request core.HttpRequest) core.HttpResponse {
+	if request.Method != "POST" {
+		return *core.HTTP405.Copy()
+	}
+	reqUser := new(User)
+	err := json.Unmarshal([]byte(request.Body), reqUser)
+	if err != nil {
+		log.Println("Error unmarshaling user:", err)
+		return *core.HTTP400.Copy()
+	}
+	if reqUser.Email == "" || reqUser.ResetToken == "" || reqUser.Password == "" {
+		return *core.HTTP400.Copy()
+	}
+
+	user := new(User)
+
+	result := db.DB.Where("email = ? and reset_token = ?", reqUser.Email, reqUser.ResetToken).First(user)
+	if result.Error != nil {
+		log.Println("Error finding user:", result.Error)
+		if strings.Contains(result.Error.Error(), "record not found") {
+			return *core.HTTP404.Copy()
+		}
+		return *core.HTTP500.Copy()
+	}
+
+	if user.ResetTimeout != nil {
+		if user.ResetTimeout.After(time.Now()) {
+			resp := core.HTTP429.Copy()
+			resp.Body = fmt.Sprintf(`{"Message": "Too many requests, timeout:%d seconds"}`, int64(user.ResetTimeout.Sub(time.Now()).Seconds()))
+			return *resp
+		}
+	}
+	if user.ResetExpires != nil {
+		if user.ResetExpires.Before(time.Now()) {
+			resp := core.HTTP409.Copy()
+			resp.Body = `{"Message": "Reset code expired"}`
+			return *resp
+		}
+	}
+
+	if user.ResetToken != reqUser.ResetToken {
+		if user.ResetTries == 5 {
+			user.ResetTimeout = new(time.Time)
+			*user.ResetTimeout = time.Now().Add(core.OTP_TIMEOUT)
+		} else if user.ResetTries == 7 {
+			*user.ResetTimeout = time.Now().Add(core.OTP_TIMEOUT * 5)
+		} else if user.ResetTries == 10 {
+			*user.ResetTimeout = time.Now().Add(core.OTP_TIMEOUT * 10)
+		} else if user.ResetTries%5 == 0 {
+			*user.ResetTimeout = time.Now().Add(core.OTP_TIMEOUT * 30)
+		}
+		user.ResetTries++
+		resp := core.HTTP409.Copy()
+		resp.Body = `{"Message": "Invalid reset code"}`
+		return *resp
+	} else {
+		user.ResetTries = 0
+		user.ResetTimeout = nil
+		newPass, err := HashPassword(reqUser.Password)
+		if err != nil {
+			log.Println("Error hashing password:", err)
+			return *core.HTTP500.Copy()
+		}
+		user.Password = newPass
+	}
+
+	result = db.DB.Save(user)
+	if result.Error != nil {
+		log.Println("Error saving user:", result.Error)
+		return *core.HTTP500.Copy()
+	}
+
+	response := core.HTTP200.Copy()
+	response.Body = `{"Message": "Password successfully reset"}`
 	return *response
 }

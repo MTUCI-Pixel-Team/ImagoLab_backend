@@ -7,6 +7,7 @@ package core
 import (
 	"log"
 	"os"
+	"text/template"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -37,7 +38,8 @@ const (
 	CONN_TIMEOUT  time.Duration = 20
 	WRITE_TIMEOUT time.Duration = 20
 	BUFSIZE       int           = 5 * 1024 * 1024
-	IMAGES_DIR    string        = "/media/images"
+	AVATARS_DIR   string        = "/media/images/avatars"
+
 	// Настройки мидлваров
 	IS_ALLOWED_HOSTS bool = true
 	REQ_MIDDLEWARE   bool = true
@@ -89,6 +91,14 @@ var (
 	JWT_REFRESH_SECRET_KEY      string
 	JWT_ACCESS_EXPIRATION_TIME  time.Duration = time.Hour * 24
 	JWT_REFRESH_EXPIRATION_TIME time.Duration = time.Hour * 336
+)
+
+/*
+Шаблоны
+*/
+var (
+	ACTIVATE_EMAIL_TEMPLATE *template.Template
+	RESET_PASSWORD_TEMPLATE *template.Template
 )
 
 /*
@@ -152,5 +162,13 @@ func InitEnv(paths ...string) error {
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
+
+	ACTIVATE_EMAIL_TEMPLATE, err = template.ParseFiles("user/templates/mail/Activate.html")
+	RESET_PASSWORD_TEMPLATE, err = template.ParseFiles("user/templates/mail/ResetPass.html")
+	if err != nil {
+		log.Fatalf("Error env load %v", err)
+		return err
+	}
+
 	return nil
 }
