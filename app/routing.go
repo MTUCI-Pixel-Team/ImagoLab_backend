@@ -2,7 +2,6 @@ package app
 
 import (
 	"RestAPI/core"
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -40,7 +39,6 @@ func registerHandler(url string, f HandlerFunc, name ...string) {
 
 func router(url string) HandlerFunc {
 	for pattern, info := range HandlersList {
-		fmt.Println("Checking", pattern)
 		if pattern.MatchString(url) {
 			return info.HandlerFunc
 		}

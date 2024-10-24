@@ -348,7 +348,7 @@ func AuthUserHandler(request core.HttpRequest) core.HttpResponse {
 			*user.AuthTimeout = time.Now().Add(core.AUTH_TIMEOUT * 5)
 		} else if user.AuthTries == 8 {
 			*user.AuthTimeout = time.Now().Add(core.AUTH_TIMEOUT * 10)
-		} else if user.AuthTries%5 == 0 {
+		} else if user.AuthTries%5 == 0 && user.AuthTries > 10 {
 			*user.AuthTimeout = time.Now().Add(core.AUTH_TIMEOUT * 30)
 		}
 		user.AuthTries++
@@ -698,7 +698,7 @@ func ResetPasswordHandler(request core.HttpRequest) core.HttpResponse {
 			*user.ResetTimeout = time.Now().Add(core.OTP_TIMEOUT * 5)
 		} else if user.ResetTries == 10 {
 			*user.ResetTimeout = time.Now().Add(core.OTP_TIMEOUT * 10)
-		} else if user.ResetTries%5 == 0 {
+		} else if user.ResetTries%5 == 0 && user.ResetTries > 10 {
 			*user.ResetTimeout = time.Now().Add(core.OTP_TIMEOUT * 30)
 		}
 		user.ResetTries++

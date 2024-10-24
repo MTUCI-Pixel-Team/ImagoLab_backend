@@ -88,6 +88,7 @@ func generateActivationCode() int {
 }
 
 func generateSecureToken() (string, error) {
+	rand.Seed(uint64(time.Now().UnixNano()))
 	bytes := make([]byte, 16)
 	_, err := rand.Read(bytes)
 	if err != nil {

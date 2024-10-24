@@ -106,14 +106,11 @@ func keepAliveMiddleware(request *HttpRequest, clientConn Conn) error {
 	}
 	for key := range request.Headers {
 		if key == "Connection" {
-			if request.Headers[key] == "close" {
+			if request.Headers[key] == "close" || request.Headers[key] == "" {
 				return errors.New("Connection: close")
 			}
 			if request.Headers[key] == "keep-alive" {
 				clientConn.SetDeadline(time.Now().Add(CONN_TIMEOUT * time.Second))
-			}
-			if request.Headers[key] == "" {
-				return errors.New("Connection: close")
 			}
 		}
 	}
