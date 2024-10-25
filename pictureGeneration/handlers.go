@@ -21,38 +21,38 @@ var connectedClients = make(map[uint]*pg.WSClient)
 /*
 docs(
 
-		name: GenerateImage;
-		tag: image;
-		path: /image/generate;
-		method: POST;
-		summary: Generate an image using the given data;
-		isAuth: true;
-		req_content_type:application/json;
-		requestbody: {
-			"taskType": "string",
-			"taskUUID": "string",
-			"outputType": ["string"],
-			"outputFormat": "string",
-			"positivePrompt": "string",
-			"negativePrompt": "string",
-			"height": int,
-			"width": int,
-			"model": "string",
-			"steps": int,
-			"CFGScale": float64,
-			"numberResults": int,
-			"scheduler": "string",
-			"seed": int
-		};
-		resp_content_type: application/json;
-		responsebody: [{
-	        "ID": int,
-	        "CreatedAt": "time",
-	        "UpdatedAt": "time",
-	        "DeletedAt": time,
-	        "UserID": int,
-	        "url": "string"
-	    }];
+	name: GenerateImage;
+	tag: image;
+	path: /image/generate;
+	method: POST;
+	summary: Generate an image using the given data;
+	isAuth: true;
+	req_content_type:application/json;
+	requestbody: {
+		"taskType": "string",
+		"taskUUID": "string",
+		"outputType": ["string"],
+		"outputFormat": "string",
+		"positivePrompt": "string",
+		"negativePrompt": "string",
+		"height": int,
+		"width": int,
+		"model": "string",
+		"steps": int,
+		"CFGScale": float64,
+		"numberResults": int,
+		"scheduler": "string",
+		"seed": int
+	};
+	resp_content_type: application/json;
+	responsebody: [{
+	    "ID": int,
+	    "CreatedAt": "time",
+	    "UpdatedAt": "time",
+	    "DeletedAt": time,
+	    "UserID": int,
+	    "url": "string"
+	}];
 
 )docs
 */
@@ -140,11 +140,11 @@ docs(
 	method: GET;
 	summary: Get all images of the user;
 	isAuth: true;
-	resp_content_type: application/json;
 	QueryParams: {
 		"page": "int",
 		"limit": "int"
 	};
+	resp_content_type: application/json;
 	responsebody: {
 		"total": int,
 		"total_pages": int,

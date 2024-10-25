@@ -15,11 +15,15 @@ docs(
 	summary: <text>;                        // Краткое описание
 	description: <text>;                    // Полное описание
 	isAuth: <true/false>;                   // Требуется ли авторизция в запросе
+	QueryParams / PathParams: {				/*
+		"key1": "<valueType>",				  Query и Path параметры для url запроса. Сигнатура документирования у них одинаковая.
+		"key2": "<valueType>" 				  На данный момент служат в качестве справочной информации.
+	};										/*
 	req_content_types: <conType>,<conType>; // Типы контента, поддерживаемые обработчиком
 	requestbody: {                          /* 
 		"key1": "<valueType>",                Ожидаемое тело запроса. Одинаковая сигнатура для json и formData.
 		"key2": "<valueType>"                 Для передачи файлов в formData используйте type = file
-	};                                      */
+	};                                      /*
 	resp_content_type: <conType>;           // Тип контента, возвращаемый обработчиком
 	responsebody: {                         /*
 		"key1": "<valueType>"                  Возвращаемое тело запроса

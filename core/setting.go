@@ -26,6 +26,7 @@ type DBCredentials struct {
 */
 var APPS = []string{
 	"user",
+	"pictureGeneration",
 }
 
 const (
