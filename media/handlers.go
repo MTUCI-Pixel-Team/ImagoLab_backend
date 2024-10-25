@@ -2,7 +2,6 @@ package media
 
 import (
 	"RestAPI/core"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -15,7 +14,6 @@ func ImageHandler(request core.HttpRequest) core.HttpResponse {
 	if request.Method != "GET" {
 		return *core.HTTP405.Copy()
 	}
-	fmt.Println("ImageHandler", request.Url)
 
 	currentDir, er := os.Getwd()
 	if er != nil {

@@ -56,8 +56,13 @@ func CreateUserHandler(request core.HttpRequest) core.HttpResponse {
 		log.Println("Error unmarshaling user:", err)
 		return *core.HTTP400.Copy()
 	}
-	if user.Username == "" || user.Email == "" || user.Password == "" {
-		return *core.HTTP400.Copy()
+
+	err = ValidateUser(*user)
+	if err != nil {
+		log.Println("Error validating user:", err)
+		resp := core.HTTP400.Copy()
+		resp.Body = fmt.Sprintf(`{"Message": "%s"}`, err.Error())
+		return *resp
 	}
 
 	user.Password, err = HashPassword(user.Password)
@@ -396,6 +401,99 @@ func AuthUserHandler(request core.HttpRequest) core.HttpResponse {
 /*
 docs(
 
+	name: RefreshTokenHandler;
+	tag: user;
+	path: /user/refresh;
+	method: POST;
+	сontent_type: application/json;
+	summary: Refresh tokens;
+	isAuth: false;
+	req_content_types: application/json;
+	requestbody: {
+		"refresh_token*": "string"
+	};
+	resp_content_type: application/json;
+	responsebody: {
+		"CreatedAt": time,
+		"UpdatedAt": time,
+		"DeletedAt": time,
+		"UserID": int,
+		"AccessToken": "string",
+		"RefreshToken": "string"
+	};
+
+)docs
+*/
+func RefreshTokenHandler(request core.HttpRequest) core.HttpResponse {
+	if request.Method != "POST" {
+		return *core.HTTP405.Copy()
+	}
+
+	reqData := new(db.Token)
+	err := json.Unmarshal([]byte(request.Body), reqData)
+	if err != nil {
+		log.Println("Error unmarshaling token:", err)
+		return *core.HTTP400.Copy()
+	}
+
+	if reqData.RefreshToken == "" {
+		return *core.HTTP400.Copy()
+	}
+
+	token := new(db.Token)
+	result := db.DB.Where("refresh_token = ?", reqData.RefreshToken).First(token)
+	if result.Error != nil {
+		log.Println("Error finding token:", result.Error)
+		if strings.Contains(result.Error.Error(), "record not found") {
+			return *core.HTTP404.Copy()
+		}
+		return *core.HTTP500.Copy()
+	}
+
+	claims, err := ValidateToken(reqData.RefreshToken)
+	if err != nil {
+		log.Println("Error validating token:", err)
+		return *core.HTTP401.Copy()
+	}
+	username := claims["username"].(string)
+	email := claims["email"].(string)
+
+	accessToken, err := GenerateAccessToken(username, email)
+	if err != nil {
+		log.Println("Error generating access token:", err)
+		return *core.HTTP500.Copy()
+	}
+	refreshToen, err := GenerateRefreshToken(username, email)
+	if err != nil {
+		log.Println("Error generating refresh token:", err)
+		return *core.HTTP500.Copy()
+	}
+
+	newTokens := &db.Token{
+		UserID:       token.UserID,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToen,
+	}
+
+	result = db.DB.Save(newTokens)
+	if result.Error != nil {
+		log.Println("Error saving token:", result.Error)
+		return *core.HTTP500.Copy()
+	}
+
+	response := core.HTTP200.Copy()
+	err = response.Serialize(newTokens)
+	if err != nil {
+		log.Println("Error serializing tokens:", err)
+		return *core.HTTP500.Copy()
+	}
+
+	return *response
+}
+
+/*
+docs(
+
 	name: GetUserHandler;
 	tag: user;
 	path: /user/get/{int:ID};
@@ -439,13 +537,64 @@ func GetUserHandler(request core.HttpRequest) core.HttpResponse {
 		return *core.HTTP500.Copy()
 	}
 
+	user.Email = ""
 	user.Otp = 0
 	user.OtpExpires = nil
 	user.Password = ""
 	user.Tokens = nil
+	user.ResetToken = ""
+	user.ResetExpires = nil
 
 	response := core.HTTP200.Copy()
 	err = response.Serialize(user)
+	if err != nil {
+		log.Println("Error serializing user:", err)
+		return *core.HTTP500.Copy()
+	}
+	return *response
+}
+
+/*
+docs(
+
+	name: GetMeHandler;
+	tag: user;
+	path: /user/me;
+	method: GET;
+	summary: Get user by token;
+	description: Get user by token;
+	isAuth: true;
+	resp_content_type: application/json;
+	responsebody: {
+		"ID": int,
+		"CreatedAt": "time",
+		"UpdatedAt": "time",
+		"DeletedAt": time,
+		"username": "string",
+		"is_active": bool,
+		"email": "string"
+	};
+
+)docs
+*/
+func GetMeHandler(request core.HttpRequest) core.HttpResponse {
+	if request.Method != "GET" {
+		return *core.HTTP405.Copy()
+	}
+	if request.User == nil {
+		return *core.HTTP401.Copy()
+	}
+	reqUser := request.User.(*db.User)
+
+	reqUser.Otp = 0
+	reqUser.OtpExpires = nil
+	reqUser.Password = ""
+	reqUser.Tokens = nil
+	reqUser.ResetToken = ""
+	reqUser.ResetExpires = nil
+
+	response := core.HTTP200.Copy()
+	err := response.Serialize(reqUser)
 	if err != nil {
 		log.Println("Error serializing user:", err)
 		return *core.HTTP500.Copy()
@@ -491,19 +640,45 @@ func UpdateUserHandler(request core.HttpRequest) core.HttpResponse {
 	if request.User == nil {
 		return *core.HTTP401.Copy()
 	}
+
 	reqUser := request.User.(*db.User)
 
 	if request.FormData != nil {
+		if request.FormData.Fields["username"] == "" && request.FormData.Fields["email"] == "" && request.FormData.Fields["new_password"] == "" && len(request.FormData.Files["avatar"]) == 0 {
+			return *core.HTTP400.Copy()
+		}
 		if request.FormData.Fields["username"] != "" {
+			err := ValidateUsername(request.FormData.Fields["username"], DefaultValidationRules())
+			if err != nil {
+				log.Println("Error validating username:", err)
+				resp := core.HTTP400.Copy()
+				resp.Body = fmt.Sprintf(`{"Message": "%s"}`, err.Error())
+				return *resp
+			}
 			reqUser.Username = request.FormData.Fields["username"]
 		}
 		if request.FormData.Fields["email"] != "" {
+			err := ValidateEmail(request.FormData.Fields["email"], DefaultValidationRules())
+			if err != nil {
+				log.Println("Error validating email:", err)
+				resp := core.HTTP400.Copy()
+				resp.Body = fmt.Sprintf(`{"Message": "%s"}`, err.Error())
+				return *resp
+			}
 			reqUser.Email = request.FormData.Fields["email"]
 		}
 		if request.FormData.Fields["new_password"] != "" && request.FormData.Fields["old_password"] != "" {
 			if !CheckPassword(reqUser.Password, request.FormData.Fields["old_password"]) {
 				return *core.HTTP401.Copy()
 			}
+			valErr := ValidatePassword(request.FormData.Fields["new_password"], DefaultValidationRules())
+			if valErr != nil {
+				log.Println("Error validating password:", valErr)
+				resp := core.HTTP400.Copy()
+				resp.Body = fmt.Sprintf(`{"Message": "%s"}`, valErr.Error())
+				return *resp
+			}
+
 			newPass, err := HashPassword(request.FormData.Fields["new_password"])
 			if err != nil {
 				log.Println("Error hashing password:", err)
@@ -525,11 +700,27 @@ func UpdateUserHandler(request core.HttpRequest) core.HttpResponse {
 				}
 			}
 			reqUser.Avatar = "/images/" + filename
+		} else {
+			if reqUser.Avatar != "" {
+				err := media.DeleteFile(strings.TrimPrefix(reqUser.Avatar, "/images/"))
+				if err != nil {
+					log.Println("Error deleting file:", err)
+					return *core.HTTP500.Copy()
+				}
+				reqUser.Avatar = ""
+			}
 		}
+	} else {
+		return *core.HTTP400.Copy()
 	}
 
 	result := db.DB.Save(reqUser)
 	if result.Error != nil {
+		if strings.Contains(result.Error.Error(), `duplicate key value violates unique constraint "uni_users_email"`) {
+			resp := core.HTTP409.Copy()
+			resp.Body = `{"Message": "User with this email already exists"}`
+			return *resp
+		}
 		log.Println("Error saving user:", result.Error)
 		return *core.HTTP500.Copy()
 	}
@@ -538,6 +729,8 @@ func UpdateUserHandler(request core.HttpRequest) core.HttpResponse {
 	reqUser.Otp = 0
 	reqUser.OtpExpires = nil
 	reqUser.Tokens = nil
+	reqUser.ResetToken = ""
+	reqUser.ResetExpires = nil
 
 	response := core.HTTP200.Copy()
 	err := response.Serialize(reqUser)
@@ -662,6 +855,14 @@ func ResetPasswordHandler(request core.HttpRequest) core.HttpResponse {
 	}
 	if reqUser.Email == "" || reqUser.ResetToken == "" || reqUser.Password == "" {
 		return *core.HTTP400.Copy()
+	}
+
+	valErr := ValidatePassword(reqUser.Password, DefaultValidationRules())
+	if valErr != nil {
+		log.Println("Error validating password:", err)
+		resp := core.HTTP400.Copy()
+		resp.Body = fmt.Sprintf(`{"Message": "%s"}`, valErr.Error())
+		return *resp
 	}
 
 	user := new(User)

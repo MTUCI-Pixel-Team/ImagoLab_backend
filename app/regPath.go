@@ -24,7 +24,9 @@ func InitHandlers() {
 	registerHandler("/user/activate", user.ActivateAccountHandler, "activateUser")
 	registerHandler("/user/auth", user.AuthUserHandler, "verifyUser")
 	registerHandler("/user/get/{int:ID}", user.GetUserHandler, "getUser")
+	registerHandler("/user/me", user.GetMeHandler, "deleteUser")
 	registerHandler("/user/update", user.UpdateUserHandler, "updateUser")
 	registerHandler("/user/reset_password", user.ResetPasswordHandler, "resetPassword")
 	registerHandler("/user/send_reset_password_mail", user.SendResetPasswordMailHandler, "sendReset")
+	registerHandler("/user/refresh", user.RefreshTokenHandler, "refreshToken")
 }
