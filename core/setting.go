@@ -39,7 +39,6 @@ const (
 	WRITE_TIMEOUT time.Duration = 20
 	BUFSIZE       int           = 5 * 1024 * 1024
 	AVATARS_DIR   string        = "/media/images/avatars"
-
 	// Настройки мидлваров
 	IS_ALLOWED_HOSTS bool = true
 	REQ_MIDDLEWARE   bool = true
@@ -123,6 +122,13 @@ var (
 )
 
 /*
+Ranware settings
+*/
+var (
+	RUNWARE_API_KEY string
+)
+
+/*
 инициализация переменных окружения
 */
 func InitEnv(paths ...string) error {
@@ -166,6 +172,12 @@ func InitEnv(paths ...string) error {
 	ACTIVATE_EMAIL_TEMPLATE, err = template.ParseFiles("user/templates/mail/Activate.html")
 	RESET_PASSWORD_TEMPLATE, err = template.ParseFiles("user/templates/mail/ResetPass.html")
 	if err != nil {
+		log.Fatalf("Error env load %v", err)
+		return err
+	}
+
+	RUNWARE_API_KEY = os.Getenv("RUNWARE_API_KEY")
+	if RUNWARE_API_KEY == "" {
 		log.Fatalf("Error env load %v", err)
 		return err
 	}

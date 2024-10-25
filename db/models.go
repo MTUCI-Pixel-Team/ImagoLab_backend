@@ -12,6 +12,7 @@ import (
 var autoMigrateModels = []any{
 	User{},
 	Token{},
+	Image{},
 }
 
 // Create our models here
@@ -45,7 +46,7 @@ type Token struct {
 }
 
 type Image struct {
-	ID     uint `json:"-" gorm:"primaryKey"`
+	gorm.Model
 	UserID uint
 	Url    string `json:"url"`
 }

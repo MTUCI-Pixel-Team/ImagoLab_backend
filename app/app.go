@@ -6,6 +6,7 @@ package app
 
 import (
 	"RestAPI/core"
+	"fmt"
 	"log"
 	"mime"
 	"strconv"
@@ -28,7 +29,7 @@ func MainApplication(request *core.HttpRequest) ([]byte, error) {
 		response.SetHeader("Access-Control-Allow-Credentials", "true")
 		return response.ToBytes(), nil
 	}
-
+	fmt.Println("Request:", request.Query)
 	contentType, _, _ := mime.ParseMediaType(request.Headers["Content-Type"])
 	if contentType == "application/x-www-form-urlencoded" || contentType == "multipart/form-data" {
 		er := request.ParseFormData()
