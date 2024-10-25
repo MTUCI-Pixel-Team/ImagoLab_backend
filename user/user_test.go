@@ -199,3 +199,99 @@ func TestJWTFunctions(t *testing.T) {
 		})
 	}
 }
+
+func TestSendActivationEmail(t *testing.T) {
+	testCases := []struct {
+		name           string
+		toEmail        string
+		activationCode int
+		expectedErr    error
+	}{
+		{
+			name:           "Valid Email",
+			toEmail:        "albertmonshtain@gmail.com",
+			activationCode: generateActivationCode(),
+			expectedErr:    nil,
+		},
+		{
+			name:           "Empty Email",
+			toEmail:        "",
+			activationCode: generateActivationCode(),
+			expectedErr:    errors.New("Email is empty"),
+		},
+		{
+			name:           "Invalid Activation Link",
+			toEmail:        "albertmonshtain@gmail.com",
+			activationCode: 0,
+			expectedErr:    errors.New("Invalid activation code"),
+		},
+	}
+
+	err := core.InitEnv("../.env")
+	if err != nil {
+		t.Errorf("Error env load %v", err)
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := SendActivationEmail(tc.toEmail, tc.activationCode)
+			if tc.expectedErr != nil {
+				if err == nil || err.Error() != tc.expectedErr.Error() {
+					t.Errorf("Expected error: %v, got: %v", tc.expectedErr, err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+			}
+		})
+	}
+}
+
+// func TestSendSMS(t *testing.T) {
+// 	testCases := []struct {
+// 		name           string
+// 		phone          string
+// 		activationCode int
+// 		expectedErr    error
+// 	}{
+// 		{
+// 			name:           "Valid Phone Number",
+// 			phone:          "79266131479",
+// 			activationCode: generateActivationCode(),
+// 			expectedErr:    nil,
+// 		},
+// 		{
+// 			name:           "Empty Phone Number",
+// 			phone:          "",
+// 			activationCode: generateActivationCode(),
+// 			expectedErr:    errors.New("Mobile number is empty"),
+// 		},
+// 		{
+// 			name:           "Invalid Activation Link",
+// 			phone:          "79936977511",
+// 			activationCode: 0,
+// 			expectedErr:    errors.New("Invalid code: 0"),
+// 		},
+// 	}
+
+// 	err := core.InitEnv("../.env")
+// 	if err != nil {
+// 		t.Errorf("Error env load %v", err)
+// 	}
+
+// 	for _, tc := range testCases {
+// 		t.Run(tc.name, func(t *testing.T) {
+// 			err := SendSMS(tc.phone, tc.activationCode)
+// 			if tc.expectedErr != nil {
+// 				if err == nil || err.Error() != tc.expectedErr.Error() {
+// 					t.Errorf("Expected error: %v, got: %v", tc.expectedErr, err)
+// 				}
+// 			} else {
+// 				if err != nil {
+// 					t.Errorf("Unexpected error: %v", err)
+// 				}
+// 			}
+// 		})
+// 	}
+// }

@@ -2,6 +2,8 @@ package app
 
 import (
 	"RestAPI/core"
+	"regexp"
+	"strings"
 )
 
 type HandlerFunc func(core.HttpRequest) core.HttpResponse
@@ -11,16 +13,35 @@ type funcInfo struct {
 	name string
 }
 
-var HandlersList = make(map[string]funcInfo)
+var HandlersList = make(map[*regexp.Regexp]funcInfo)
 
 func registerHandler(url string, f HandlerFunc, name ...string) {
 	var handlerName string
 	if len(name) > 0 {
 		handlerName = name[0]
 	}
-	HandlersList[url] = funcInfo{f, handlerName}
+	pattern := regexp.MustCompile(`\{[a-zA-Z0-9:.!,?\-_]+\}`)
+	matches := pattern.FindAllString(url, -1)
+	if len(matches) > 0 {
+		for _, match := range matches {
+			if strings.HasPrefix(match, "{int:") {
+				url = strings.Replace(url, match, `([0-9]+)`, 1)
+			} else {
+				url = strings.Replace(url, match, `([a-zA-Z0-9:.!,?\-_]+)`, 1)
+			}
+		}
+	}
+
+	regex := regexp.MustCompile("^" + url + "$")
+
+	HandlersList[regex] = funcInfo{f, handlerName}
 }
 
 func router(url string) HandlerFunc {
-	return HandlersList[url].HandlerFunc
+	for pattern, info := range HandlersList {
+		if pattern.MatchString(url) {
+			return info.HandlerFunc
+		}
+	}
+	return nil
 }

@@ -14,7 +14,7 @@ import (
 
 func MainApplication(request *core.HttpRequest) ([]byte, error) {
 	if request == nil {
-		return core.HTTP400.ToBytes(), nil
+		return core.HTTP400.Copy().ToBytes(), nil
 	}
 	if request.Method == "OPTIONS" {
 		response := core.HTTP200.Copy()
@@ -41,6 +41,8 @@ func MainApplication(request *core.HttpRequest) ([]byte, error) {
 	if view == nil {
 		return core.HTTP404.Copy().ToBytes(), nil
 	}
+
+	CheckAuth(request)
 
 	response := view(*request)
 	if response.Body != "" {

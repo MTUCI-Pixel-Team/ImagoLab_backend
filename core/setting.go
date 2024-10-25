@@ -7,6 +7,7 @@ package core
 import (
 	"log"
 	"os"
+	"text/template"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -37,11 +38,14 @@ const (
 	CONN_TIMEOUT  time.Duration = 20
 	WRITE_TIMEOUT time.Duration = 20
 	BUFSIZE       int           = 5 * 1024 * 1024
-	IMAGES_DIR    string        = "/media/images"
+	AVATARS_DIR   string        = "/media/images/avatars"
+
 	// Настройки мидлваров
 	IS_ALLOWED_HOSTS bool = true
 	REQ_MIDDLEWARE   bool = true
 	KEEP_ALIVE       bool = true
+	// Настройки таймаутов для запросов
+	AUTH_TIMEOUT time.Duration = time.Minute * 1
 )
 
 /*
@@ -89,29 +93,50 @@ var (
 	JWT_REFRESH_EXPIRATION_TIME time.Duration = time.Hour * 336
 )
 
-// /*
-// MTS API KEY
-// */
+/*
+Шаблоны
+*/
 var (
-	MTS_API_KEY    string
-	MTS_API_NUMBER string
+	ACTIVATE_EMAIL_TEMPLATE *template.Template
+	RESET_PASSWORD_TEMPLATE *template.Template
+)
+
+/*
+Firebase settings
+*/
+var (
+	FIREBASE_API_KEY string
+	RECAPTCHA_KEY    string
+	PROJECT_ID       string = "imagolab-1729380577888"
+)
+
+/*
+MAIL SETTINGS
+*/
+var (
+	MAIL_HOST     string = "mail.hosting.reg.ru"
+	MAIL_PORT     int    = 465
+	MAIL_USER     string = "main@pixel-team.ru"
+	MAIL_PASSWORD string
+	OTP_EXP_TIME  time.Duration = time.Minute * 5
+	OTP_TIMEOUT   time.Duration = time.Minute * 1
 )
 
 /*
 инициализация переменных окружения
 */
-func InitEnv() error {
-	err := godotenv.Load()
+func InitEnv(paths ...string) error {
+	var err error
+	if len(paths) > 0 {
+		err = godotenv.Load(paths...)
+	} else {
+		err = godotenv.Load()
+	}
 	if err != nil {
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
-	MTS_API_KEY = os.Getenv("MTS_API_KEY")
-	MTS_API_NUMBER = os.Getenv("MTS_API_NUMBER")
-	if MTS_API_KEY == "" || MTS_API_NUMBER == "" {
-		log.Fatalf("Error env load %v", err)
-		return err
-	}
+
 	JWT_ACCESS_SECRET_KEY = os.Getenv("JWT_ACCESS_SECRET_KEY")
 	JWT_REFRESH_SECRET_KEY = os.Getenv("JWT_REFRESH_SECRET_KEY")
 	if JWT_ACCESS_SECRET_KEY == "" || JWT_REFRESH_SECRET_KEY == "" {
@@ -124,5 +149,26 @@ func InitEnv() error {
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
+
+	FIREBASE_API_KEY = os.Getenv("FIREBASE_API_KEY")
+	RECAPTCHA_KEY = os.Getenv("RECAPTCHA_KEY")
+	if FIREBASE_API_KEY == "" || RECAPTCHA_KEY == "" {
+		log.Fatalf("Error env load %v", err)
+		return err
+	}
+
+	MAIL_PASSWORD = os.Getenv("MAIL_PASSWORD")
+	if MAIL_PASSWORD == "" {
+		log.Fatalf("Error env load %v", err)
+		return err
+	}
+
+	ACTIVATE_EMAIL_TEMPLATE, err = template.ParseFiles("user/templates/mail/Activate.html")
+	RESET_PASSWORD_TEMPLATE, err = template.ParseFiles("user/templates/mail/ResetPass.html")
+	if err != nil {
+		log.Fatalf("Error env load %v", err)
+		return err
+	}
+
 	return nil
 }
