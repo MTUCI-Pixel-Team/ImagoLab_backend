@@ -288,6 +288,239 @@
                     <div class="route-header post">
                         <div class="route-type">
                             <span class="method post">POST</span>
+                            /user/activate
+                        </div>
+                        <div>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Activate user account</p>
+                        
+                        
+                        <p><strong>Description:</strong> Activate user account by activation code</p>
+                        
+
+                        
+
+                        
+
+                        
+
+                        <div class="type-selection">
+                            <h4>Request body:</h4>
+                            <label for="content-type-ActivateAccount">Select Content Type:</label>
+                            <select id="content-type-ActivateAccount" name="content-type">
+                                
+                                <option value="application/json">application/json</option>
+                                
+                            </select><br>
+                        </div>
+
+                        
+
+
+                        <button class="try-it-out post">Try it out</button>
+
+                        
+
+                        <div class="example-value">
+                            <p>Example value</p>
+                            
+                            <div class="json-example json-example-ActivateAccount">
+                                <pre>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;otp*&#34;: int
+}
+</pre>
+                            </div>
+                            
+                            
+
+                        </div>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-ActivateAccount" class="request-form" data-url="/user/activate">
+
+                                
+
+                                <textarea id="json-input-ActivateAccount" name="json-body" placeholder='{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;otp*&#34;: int
+}
+'
+                                    style="display: none;" required>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;otp*&#34;: int
+}
+</textarea>
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;Message&#34;: &#34;string&#34;
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                <div class="route-block">
+
+                    <div class="route-header post">
+                        <div class="route-type">
+                            <span class="method post">POST</span>
+                            /user/auth
+                        </div>
+                        <div>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Authentification user</p>
+                        
+                        
+
+                        
+
+                        
+
+                        
+
+                        <div class="type-selection">
+                            <h4>Request body:</h4>
+                            <label for="content-type-AuthUserHandler">Select Content Type:</label>
+                            <select id="content-type-AuthUserHandler" name="content-type">
+                                
+                                <option value="application/json">application/json</option>
+                                
+                            </select><br>
+                        </div>
+
+                        
+
+
+                        <button class="try-it-out post">Try it out</button>
+
+                        
+
+                        <div class="example-value">
+                            <p>Example value</p>
+                            
+                            <div class="json-example json-example-AuthUserHandler">
+                                <pre>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;password*&#34;: &#34;string&#34;
+}
+</pre>
+                            </div>
+                            
+                            
+
+                        </div>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-AuthUserHandler" class="request-form" data-url="/user/auth">
+
+                                
+
+                                <textarea id="json-input-AuthUserHandler" name="json-body" placeholder='{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;password*&#34;: &#34;string&#34;
+}
+'
+                                    style="display: none;" required>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;password*&#34;: &#34;string&#34;
+}
+</textarea>
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;CreatedAt&#34;: time,
+	&#34;UpdatedAt&#34;: time,
+	&#34;DeletedAt&#34;: time,
+	&#34;UserID&#34;: int,
+	&#34;AccessToken&#34;: &#34;string&#34;,
+	&#34;RefreshToken&#34;: &#34;string&#34;
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                <div class="route-block">
+
+                    <div class="route-header post">
+                        <div class="route-type">
+                            <span class="method post">POST</span>
                             /user/refresh
                         </div>
                         <div>
@@ -800,357 +1033,6 @@
                     <div class="route-header post">
                         <div class="route-type">
                             <span class="method post">POST</span>
-                            /user/activate
-                        </div>
-                        <div>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        
-                        <p><strong>Summary:</strong> Activate user account</p>
-                        
-                        
-                        <p><strong>Description:</strong> Activate user account by activation code</p>
-                        
-
-                        
-
-                        
-
-                        
-
-                        <div class="type-selection">
-                            <h4>Request body:</h4>
-                            <label for="content-type-ActivateAccount">Select Content Type:</label>
-                            <select id="content-type-ActivateAccount" name="content-type">
-                                
-                                <option value="application/json">application/json</option>
-                                
-                            </select><br>
-                        </div>
-
-                        
-
-
-                        <button class="try-it-out post">Try it out</button>
-
-                        
-
-                        <div class="example-value">
-                            <p>Example value</p>
-                            
-                            <div class="json-example json-example-ActivateAccount">
-                                <pre>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;otp*&#34;: int
-}
-</pre>
-                            </div>
-                            
-                            
-
-                        </div>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-ActivateAccount" class="request-form" data-url="/user/activate">
-
-                                
-
-                                <textarea id="json-input-ActivateAccount" name="json-body" placeholder='{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;otp*&#34;: int
-}
-'
-                                    style="display: none;" required>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;otp*&#34;: int
-}
-</textarea>
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button post">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;Message&#34;: &#34;string&#34;
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
-                    <div class="route-header post">
-                        <div class="route-type">
-                            <span class="method post">POST</span>
-                            /user/auth
-                        </div>
-                        <div>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        
-                        <p><strong>Summary:</strong> Authentification user</p>
-                        
-                        
-
-                        
-
-                        
-
-                        
-
-                        <div class="type-selection">
-                            <h4>Request body:</h4>
-                            <label for="content-type-AuthUserHandler">Select Content Type:</label>
-                            <select id="content-type-AuthUserHandler" name="content-type">
-                                
-                                <option value="application/json">application/json</option>
-                                
-                            </select><br>
-                        </div>
-
-                        
-
-
-                        <button class="try-it-out post">Try it out</button>
-
-                        
-
-                        <div class="example-value">
-                            <p>Example value</p>
-                            
-                            <div class="json-example json-example-AuthUserHandler">
-                                <pre>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;password*&#34;: &#34;string&#34;
-}
-</pre>
-                            </div>
-                            
-                            
-
-                        </div>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-AuthUserHandler" class="request-form" data-url="/user/auth">
-
-                                
-
-                                <textarea id="json-input-AuthUserHandler" name="json-body" placeholder='{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;password*&#34;: &#34;string&#34;
-}
-'
-                                    style="display: none;" required>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;password*&#34;: &#34;string&#34;
-}
-</textarea>
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button post">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;CreatedAt&#34;: time,
-	&#34;UpdatedAt&#34;: time,
-	&#34;DeletedAt&#34;: time,
-	&#34;UserID&#34;: int,
-	&#34;AccessToken&#34;: &#34;string&#34;,
-	&#34;RefreshToken&#34;: &#34;string&#34;
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
-                    <div class="route-header post">
-                        <div class="route-type">
-                            <span class="method post">POST</span>
-                            /user/reset_password
-                        </div>
-                        <div>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        
-                        <p><strong>Summary:</strong> Reset password</p>
-                        
-                        
-                        <p><strong>Description:</strong> Reset password by reset code</p>
-                        
-
-                        
-
-                        
-
-                        
-
-                        <div class="type-selection">
-                            <h4>Request body:</h4>
-                            <label for="content-type-ResetPasswordHandler">Select Content Type:</label>
-                            <select id="content-type-ResetPasswordHandler" name="content-type">
-                                
-                                <option value="application/json">application/json</option>
-                                
-                            </select><br>
-                        </div>
-
-                        
-
-
-                        <button class="try-it-out post">Try it out</button>
-
-                        
-
-                        <div class="example-value">
-                            <p>Example value</p>
-                            
-                            <div class="json-example json-example-ResetPasswordHandler">
-                                <pre>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;reset_token*&#34;: string,
-	&#34;password*&#34;: &#34;string&#34;
-}
-</pre>
-                            </div>
-                            
-                            
-
-                        </div>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-ResetPasswordHandler" class="request-form" data-url="/user/reset_password">
-
-                                
-
-                                <textarea id="json-input-ResetPasswordHandler" name="json-body" placeholder='{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;reset_token*&#34;: string,
-	&#34;password*&#34;: &#34;string&#34;
-}
-'
-                                    style="display: none;" required>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;reset_token*&#34;: string,
-	&#34;password*&#34;: &#34;string&#34;
-}
-</textarea>
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button post">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;Message&#34;: &#34;string&#34;
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
-                    <div class="route-header post">
-                        <div class="route-type">
-                            <span class="method post">POST</span>
                             /user/send_otp
                         </div>
                         <div>
@@ -1409,6 +1291,124 @@
 '
                                     style="display: none;" required>{
 	&#34;email*&#34;: &#34;string&#34;
+}
+</textarea>
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;Message&#34;: &#34;string&#34;
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                <div class="route-block">
+
+                    <div class="route-header post">
+                        <div class="route-type">
+                            <span class="method post">POST</span>
+                            /user/reset_password
+                        </div>
+                        <div>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Reset password</p>
+                        
+                        
+                        <p><strong>Description:</strong> Reset password by reset code</p>
+                        
+
+                        
+
+                        
+
+                        
+
+                        <div class="type-selection">
+                            <h4>Request body:</h4>
+                            <label for="content-type-ResetPasswordHandler">Select Content Type:</label>
+                            <select id="content-type-ResetPasswordHandler" name="content-type">
+                                
+                                <option value="application/json">application/json</option>
+                                
+                            </select><br>
+                        </div>
+
+                        
+
+
+                        <button class="try-it-out post">Try it out</button>
+
+                        
+
+                        <div class="example-value">
+                            <p>Example value</p>
+                            
+                            <div class="json-example json-example-ResetPasswordHandler">
+                                <pre>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;reset_token*&#34;: string,
+	&#34;password*&#34;: &#34;string&#34;
+}
+</pre>
+                            </div>
+                            
+                            
+
+                        </div>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-ResetPasswordHandler" class="request-form" data-url="/user/reset_password">
+
+                                
+
+                                <textarea id="json-input-ResetPasswordHandler" name="json-body" placeholder='{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;reset_token*&#34;: string,
+	&#34;password*&#34;: &#34;string&#34;
+}
+'
+                                    style="display: none;" required>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;reset_token*&#34;: string,
+	&#34;password*&#34;: &#34;string&#34;
 }
 </textarea>
 

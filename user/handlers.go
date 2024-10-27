@@ -857,23 +857,21 @@ func ResetPasswordHandler(request core.HttpRequest) core.HttpResponse {
 		return *core.HTTP400.Copy()
 	}
 
-	valErr := ValidatePassword(reqUser.Password, DefaultValidationRules())
-	if valErr != nil {
-		log.Println("Error validating password:", err)
-		resp := core.HTTP400.Copy()
-		resp.Body = fmt.Sprintf(`{"Message": "%s"}`, valErr.Error())
-		return *resp
-	}
-
 	user := new(User)
 
-	result := db.DB.Where("email = ? and reset_token = ?", reqUser.Email, reqUser.ResetToken).First(user)
+	result := db.DB.Where("email = ?", reqUser.Email).First(user)
 	if result.Error != nil {
 		log.Println("Error finding user:", result.Error)
 		if strings.Contains(result.Error.Error(), "record not found") {
 			return *core.HTTP404.Copy()
 		}
 		return *core.HTTP500.Copy()
+	}
+
+	if user.ResetToken == "" {
+		resp := core.HTTP404.Copy()
+		resp.Body = `{"Message": "Reset code not found"}`
+		return *resp
 	}
 
 	if user.ResetTimeout != nil {
@@ -907,8 +905,16 @@ func ResetPasswordHandler(request core.HttpRequest) core.HttpResponse {
 		resp.Body = `{"Message": "Invalid reset code"}`
 		return *resp
 	} else {
+		valErr := ValidatePassword(reqUser.Password, DefaultValidationRules())
+		if valErr != nil {
+			log.Println("Error validating password:", err)
+			resp := core.HTTP400.Copy()
+			resp.Body = fmt.Sprintf(`{"Message": "%s"}`, valErr.Error())
+			return *resp
+		}
 		user.ResetTries = 0
 		user.ResetTimeout = nil
+		user.ResetToken = ""
 		newPass, err := HashPassword(reqUser.Password)
 		if err != nil {
 			log.Println("Error hashing password:", err)
