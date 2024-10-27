@@ -248,6 +248,35 @@ func TestSendActivationEmail(t *testing.T) {
 	}
 }
 
+func TestCheckDomain(t *testing.T) {
+	testCases := []struct {
+		name        string
+		email       string
+		expectedRes bool
+	}{
+		{
+			name:        "Valid Email",
+			email:       "test@gmail.com",
+			expectedRes: true,
+		},
+		{
+			name:        "Invalid Email",
+			email:       "meger52934@aqqor.com",
+			expectedRes: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res := CheckDomain(tc.email)
+			if res != tc.expectedRes {
+				t.Errorf("Expected %v, got %v", tc.expectedRes, res)
+			}
+		})
+	}
+
+}
+
 // func TestSendSMS(t *testing.T) {
 // 	testCases := []struct {
 // 		name           string

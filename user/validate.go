@@ -2,7 +2,11 @@ package user
 
 import (
 	"fmt"
+	"io"
+	"log"
+	"net/http"
 	"regexp"
+	"sort"
 	"strings"
 	"unicode"
 )
@@ -100,6 +104,13 @@ func ValidateEmail(email string, rules *ValidationRules) *ValidationError {
 		}
 	}
 
+	if !CheckDomain(email) {
+		return &ValidationError{
+			Field:   "email",
+			Message: "email domain is not allowed",
+		}
+	}
+
 	return nil
 }
 
@@ -189,4 +200,30 @@ func ValidatePassword(password string, rules *ValidationRules) *ValidationError 
 	}
 
 	return nil
+}
+
+func CheckDomain(email string) bool {
+	emailDomain := strings.Split(email, "@")[1]
+
+	client := http.Client{}
+	mailList, err := client.Get("https://raw.githubusercontent.com/disposable/disposable-email-domains/master/domains.txt")
+	if err != nil {
+		return true
+	}
+	defer mailList.Body.Close()
+
+	data, err := io.ReadAll(mailList.Body)
+	if err != nil {
+		log.Println("Error reading mail list: ", err)
+		return true
+	}
+
+	domains := strings.Split(string(data), "\n")
+
+	index := sort.SearchStrings(domains, emailDomain)
+	if index < len(domains) && domains[index] == emailDomain {
+		return false
+	}
+
+	return true
 }

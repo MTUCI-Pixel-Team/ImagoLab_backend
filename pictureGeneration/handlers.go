@@ -64,15 +64,22 @@ func GenerateImageHandler(request core.HttpRequest) core.HttpResponse {
 		return *core.HTTP405.Copy()
 	}
 
-	user := request.User.(*db.User)
-
 	newReq := new(pg.ReqMessage)
-
 	err := json.Unmarshal([]byte(request.Body), newReq)
 	if err != nil {
 		log.Println("Error unmarshalling request body:", err)
 		return *core.HTTP400.Copy()
 	}
+
+	err = ValidateRequest(*newReq)
+	if err != nil {
+		log.Println("Error validating request:", err)
+		response := core.HTTP400.Copy()
+		response.Body = fmt.Sprintf(`{"message":"%s"}`, err.Error())
+		return *response
+	}
+
+	user := request.User.(*db.User)
 
 	newReq.TaskUUID = pg.GenerateUUID()
 
