@@ -17,7 +17,7 @@ func migrate(rollback bool) error {
 }
 
 func applyMigrations() error {
-	for _, model := range autoMigrateModels {
+	for _, model := range AutoMigrateModels {
 		log.Printf("Migrating model: %T", model)
 		if err := migrateModel(DB, model); err != nil {
 			return fmt.Errorf("failed to migrate %T: %w", model, err)
@@ -42,7 +42,7 @@ func migrateModel(db *gorm.DB, model any) error {
 func rollbackMigrations() error {
 	return DB.Transaction(func(tx *gorm.DB) error {
 		log.Println("Rolling back migrations ...")
-		for _, model := range autoMigrateModels {
+		for _, model := range AutoMigrateModels {
 			if err := tx.Migrator().DropTable(model); err != nil {
 				return fmt.Errorf("failed to drop table for %T: %w", model, err)
 			}
