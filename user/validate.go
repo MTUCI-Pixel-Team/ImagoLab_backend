@@ -1,12 +1,10 @@
 package user
 
 import (
+	"RestAPI/db"
 	"fmt"
-	"io"
-	"log"
-	"net/http"
+	"reflect"
 	"regexp"
-	"sort"
 	"strings"
 	"unicode"
 )
@@ -60,7 +58,7 @@ func DefaultValidationRules() *ValidationRules {
 	}
 }
 
-func ValidateUser(user User) error {
+func ValidateUser(user *db.User, keepFields ...[]string) (*db.User, error) {
 	rules := DefaultValidationRules()
 	var errors ValidationErrors
 
@@ -77,9 +75,15 @@ func ValidateUser(user User) error {
 	}
 
 	if len(errors) > 0 {
-		return errors
+		return user, errors
 	}
-	return nil
+
+	if len(keepFields) > 0 {
+		validUser := FilterFields(user, keepFields[0])
+		return validUser, nil
+	}
+
+	return user, nil
 }
 
 func ValidateEmail(email string, rules *ValidationRules) *ValidationError {
@@ -202,28 +206,41 @@ func ValidatePassword(password string, rules *ValidationRules) *ValidationError 
 	return nil
 }
 
-func CheckDomain(email string) bool {
-	emailDomain := strings.Split(email, "@")[1]
-
-	client := http.Client{}
-	mailList, err := client.Get("https://raw.githubusercontent.com/disposable/disposable-email-domains/master/domains.txt")
-	if err != nil {
-		return true
-	}
-	defer mailList.Body.Close()
-
-	data, err := io.ReadAll(mailList.Body)
-	if err != nil {
-		log.Println("Error reading mail list: ", err)
-		return true
+func FilterFields(user *db.User, fields []string) *db.User {
+	if user == nil {
+		return nil
 	}
 
-	domains := strings.Split(string(data), "\n")
-
-	index := sort.SearchStrings(domains, emailDomain)
-	if index < len(domains) && domains[index] == emailDomain {
-		return false
+	if len(fields) == 0 {
+		return user
 	}
 
-	return true
+	v := reflect.ValueOf(user).Elem()
+	t := v.Type()
+
+	keep := make(map[string]bool)
+	for _, field := range fields {
+		for i := 0; i < v.NumField(); i++ {
+			if t.Field(i).Name == field {
+				keep[field] = true
+				break
+			}
+		}
+	}
+	if len(keep) == 0 {
+		return user
+	}
+
+	for i := 0; i < v.NumField(); i++ {
+		field := t.Field(i)
+		if !keep[field.Name] {
+			f := v.Field(i)
+			if f.CanSet() {
+				zero := reflect.Zero(f.Type())
+				f.Set(zero)
+			}
+		}
+	}
+
+	return user
 }

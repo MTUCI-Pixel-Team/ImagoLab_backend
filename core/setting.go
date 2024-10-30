@@ -7,6 +7,7 @@ package core
 import (
 	"log"
 	"os"
+	"path/filepath"
 	"text/template"
 	"time"
 
@@ -97,6 +98,7 @@ var (
 Шаблоны
 */
 var (
+	MAIL_TEMPLATES_PATH     string
 	ACTIVATE_EMAIL_TEMPLATE *template.Template
 	RESET_PASSWORD_TEMPLATE *template.Template
 )
@@ -170,8 +172,14 @@ func InitEnv(paths ...string) error {
 		return err
 	}
 
-	ACTIVATE_EMAIL_TEMPLATE, err = template.ParseFiles("user/templates/mail/Activate.html")
-	RESET_PASSWORD_TEMPLATE, err = template.ParseFiles("user/templates/mail/ResetPass.html")
+	MAIL_TEMPLATES_PATH = os.Getenv("MAIL_TEMPLATES_PATH")
+	if MAIL_TEMPLATES_PATH == "" {
+		log.Fatalf("Error env load %v", err)
+		return err
+	}
+
+	ACTIVATE_EMAIL_TEMPLATE, err = template.ParseFiles(filepath.Join(MAIL_TEMPLATES_PATH, "Activate.html"))
+	RESET_PASSWORD_TEMPLATE, err = template.ParseFiles(filepath.Join(MAIL_TEMPLATES_PATH, "ResetPass.html"))
 	if err != nil {
 		log.Fatalf("Error env load %v", err)
 		return err

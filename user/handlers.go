@@ -50,14 +50,14 @@ func CreateUserHandler(request core.HttpRequest) core.HttpResponse {
 		return *core.HTTP405.Copy()
 	}
 
-	user := new(User)
+	user := new(db.User)
 	err := json.Unmarshal([]byte(request.Body), user)
 	if err != nil {
 		log.Println("Error unmarshaling user:", err)
 		return *core.HTTP400.Copy()
 	}
 
-	err = ValidateUser(*user)
+	user, err = ValidateUser(user, []string{"Username", "Email", "Password"})
 	if err != nil {
 		log.Println("Error validating user:", err)
 		resp := core.HTTP400.Copy()
@@ -228,7 +228,7 @@ func ActivateAccountHandler(request core.HttpRequest) core.HttpResponse {
 	}
 
 	if user.OtpTimeout != nil {
-		if user.OtpTimeout.Before(time.Now()) {
+		if user.OtpTimeout.After(time.Now()) {
 			resp := core.HTTP429.Copy()
 			resp.Body = fmt.Sprintf(`{"Message": "Too many requests, timeout:%d seconds"}`, int64(user.OtpTimeout.Sub(time.Now()).Seconds()))
 			return *resp
@@ -236,7 +236,7 @@ func ActivateAccountHandler(request core.HttpRequest) core.HttpResponse {
 	}
 
 	if user.OtpExpires != nil {
-		if user.OtpExpires.After(time.Now()) {
+		if user.OtpExpires.Before(time.Now()) {
 			resp := core.HTTP409.Copy()
 			resp.Body = `{"Message": "Activation code expired"}`
 			return *resp
