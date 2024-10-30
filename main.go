@@ -9,14 +9,14 @@ import (
 )
 
 func main() {
+	er := core.InitEnv()
+	if er != nil {
+		log.Println("Error initializing environment", er)
+		return
+	}
 	serv, er := core.CreateServer(app.MainApplication)
 	if er != nil {
 		log.Println("Error creating server", er)
-		return
-	}
-	er = core.InitEnv()
-	if er != nil {
-		log.Println("Error initializing environment", er)
 		return
 	}
 

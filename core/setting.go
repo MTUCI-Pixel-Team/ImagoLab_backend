@@ -5,6 +5,7 @@ package core
 */
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"text/template"
@@ -28,13 +29,16 @@ var APPS = []string{
 	"user",
 }
 
+var (
+	CERT_FILE string
+	KEY_FILE  string
+)
+
 const (
 	// Настройки сервера
 	HOST          string        = "localhost"
 	HTTP_PORT     int           = 8082
 	HTTPS_PORT    int           = 8446
-	CERT_FILE     string        = "/home/user/etc/ssl/certs/dev.crt"
-	KEY_FILE      string        = "/home/user/etc/ssl/private/dev.key"
 	CONN_TIMEOUT  time.Duration = 20
 	WRITE_TIMEOUT time.Duration = 20
 	BUFSIZE       int           = 5 * 1024 * 1024
@@ -136,7 +140,8 @@ func InitEnv(paths ...string) error {
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
-
+	CERT_FILE = fmt.Sprintf("/home/%s/etc/ssl/certs/dev.crt", os.Getenv("HOME_DIRECT"))
+	KEY_FILE = fmt.Sprintf("/home/%s/etc/ssl/private/dev.key", os.Getenv("HOME_DIRECT"))
 	JWT_ACCESS_SECRET_KEY = os.Getenv("JWT_ACCESS_SECRET_KEY")
 	JWT_REFRESH_SECRET_KEY = os.Getenv("JWT_REFRESH_SECRET_KEY")
 	if JWT_ACCESS_SECRET_KEY == "" || JWT_REFRESH_SECRET_KEY == "" {
@@ -164,6 +169,10 @@ func InitEnv(paths ...string) error {
 	}
 
 	ACTIVATE_EMAIL_TEMPLATE, err = template.ParseFiles("user/templates/mail/Activate.html")
+	if err != nil {
+		log.Fatalf("Error env load %v", err)
+		return err
+	}
 	RESET_PASSWORD_TEMPLATE, err = template.ParseFiles("user/templates/mail/ResetPass.html")
 	if err != nil {
 		log.Fatalf("Error env load %v", err)

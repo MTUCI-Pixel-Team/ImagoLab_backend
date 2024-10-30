@@ -6,15 +6,12 @@ import (
 	"gorm.io/gorm"
 )
 
-/*
-Для автоматической миграции моделей в базу данных внести модель в массив AutoMigrateModels
-*/
 var AutoMigrateModels = []any{
 	User{},
 	Token{},
+	Image{},
 }
 
-// Create our models here
 type User struct {
 	gorm.Model
 	Username     string     `json:"username" gorm:"size:64;not null"`

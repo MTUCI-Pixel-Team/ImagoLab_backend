@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	rollbak := flag.Bool("rollback", false, "Rollback migrations")
+	rollbaсk := flag.Bool("rollback", false, "Rollback migrations")
+	version := flag.Int("version", -1, "Version of migration to rollback")
 	flag.Parse()
-	db.RunMigrations(*rollbak)
+	db.RunMigrations(*rollbaсk, *version)
 }

@@ -1,6 +1,7 @@
 # test - запуск тестов
 # migrate - запуск миграций
 # migrate -rollback - откат миграций
+# migrate -rollback -version - замена файла models.go на указанную версию
 # По умолчанию сборка и запуск сервера
 run_tests() {
     echo "Running tests..."
@@ -21,12 +22,20 @@ run_migrate() {
 }
 
 run_migrate_rollback() {
-    echo "Rolling back migrations..."
-    go run db/cmd/runMigrations.go -rollback
+    version=$1
+
+    if [ -z "$version" ]; then
+        echo "Please specify a version number."
+        exit 1
+    fi
+
+    echo "Rolling back migrations to version $version..."
+    go run db/cmd/runMigrations.go -rollback -version "$version"
     if [ $? -ne 0 ]; then
         echo "Migration rollback failed."
         exit 1
     fi
+    run_migrate
 }
 
 build_and_run_server() {
@@ -44,8 +53,8 @@ build_and_run_server() {
 if [ "$1" = "test" ]; then
     run_tests
 elif [ "$1" = "migrate" ]; then
-    if [ "$2" = "-rollback" ]; then
-        run_migrate_rollback
+    if [ "$2" = "-rollback" ] && [ "$3" = "-version" ] && [ -n "$4" ]; then
+        run_migrate_rollback "$4"
     else
         if [ "$2" = "" ]; then
             run_migrate
