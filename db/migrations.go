@@ -50,10 +50,10 @@ func migrateModel(db *gorm.DB, model any) error {
 
 func rollbackMigrations(version int) error {
 	err := migrations.MigrateModelFromVersion(version)
-	if err.Error() == "no need migrations" {
-		return nil
-	}
 	if err != nil {
+		if err.Error() == "no need migrations" {
+			return nil
+		}
 		return fmt.Errorf("failed to rollback migrations: %w", err)
 	}
 

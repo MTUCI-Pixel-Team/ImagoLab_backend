@@ -32,8 +32,8 @@ func GenerateMigrationFile() error {
 		return fmt.Errorf("failed to get last migration index: %v", err)
 	}
 
-	pathToCreateFile := fmt.Sprintf("migrations/migrationFiles/migrate%d.txt", migrationNumber+1)
-	lastMigrationFile := fmt.Sprintf("migrations/migrationFiles/migrate%d.txt", migrationNumber)
+	pathToCreateFile := fmt.Sprintf("migrations/migrationFiles/migrate%d.mg", migrationNumber+1)
+	lastMigrationFile := fmt.Sprintf("migrations/migrationFiles/migrate%d.mg", migrationNumber)
 
 	// Читаем содержимое последнего файла миграции
 	lastFileContent, err := os.ReadFile(lastMigrationFile)
@@ -77,7 +77,7 @@ func getMaxMigrateNumber() (int, error) {
 	}
 
 	maxNumber := 0
-	regex := regexp.MustCompile(`^migrate(\d+)\.txt$`)
+	regex := regexp.MustCompile(`^migrate(\d+)\.mg$`)
 	for _, file := range files {
 		if !file.IsDir() {
 			matches := regex.FindStringSubmatch(file.Name())

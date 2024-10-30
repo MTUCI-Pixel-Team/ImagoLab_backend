@@ -41,7 +41,6 @@ type Token struct {
 	RefreshToken string `json:"refresh_token,omitempty" gorm:"size:256"`
 }
 
-// type Image struct {
 type Image struct {
 	ID     uint `json:"-" gorm:"primaryKey"`
 	UserID uint

@@ -18,47 +18,52 @@ func MigrateModelFromVersion(v int) error {
 		return fmt.Errorf("invalid migration version format")
 	}
 
-	migrationFilename := "migrations/migrationFiles/migrate" + version + ".txt"
-
 	// Открываем исходный файл
-	srcFile, err := os.Open(migrationFilename)
+	migrationFilename := "migrations/migrationFiles/migrate" + version + ".mg"
+	migrationFile, err := os.Open(migrationFilename)
 	if err != nil {
 		return fmt.Errorf("file '%s' not found: %v", migrationFilename, err)
 	}
-	defer srcFile.Close()
+	defer migrationFile.Close()
 
-	// Создаем имя файла с расширением .go
-	modelsFilename := "db/models.go"
-
-	// Читаем содержимое последнего файла миграции
-	lastFileContent, err := os.ReadFile(modelsFilename)
-	if err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("failed to read models file: %v", err)
-	}
-
-	// Читаем содержимое нового файла миграции
-	newFileContent, err := io.ReadAll(srcFile)
+	// Читаем содержимое файла миграции
+	migrationFileText, err := io.ReadAll(migrationFile)
 	if err != nil {
 		return fmt.Errorf("failed to read migration file: %v", err)
 	}
 
+	// Открываем файл с моделями
+	modelsFilename := "db/models.go"
+	modelsFile, err := os.Open(modelsFilename)
+	if err != nil {
+		return fmt.Errorf("file '%s' not found: %v", modelsFilename, err)
+	}
+	defer modelsFile.Close()
+
+	// Читаем содержимое файла моделей
+	modelsFileText, err := io.ReadAll(modelsFile)
+	if err != nil {
+		return fmt.Errorf("failed to read models file: %v", err)
+	}
+
 	// Сравниваем содержимое файлов
-	if string(lastFileContent) == string(newFileContent) {
+	if string(migrationFileText) == string(modelsFileText) {
 		log.Info("\033[32mmigration is identical to the models file, no migration needed\033[0m")
 		return fmt.Errorf("no need migrations")
 	}
 
-	// Создаем файл назначения
-	dstFile, err := os.Create(modelsFilename)
+	goFile, err := os.Create(modelsFilename)
 	if err != nil {
-		return fmt.Errorf("error creating file '%s': %v", modelsFilename, err)
+		log.Warn("error creating file")
+		return fmt.Errorf("failed to create file: %v", err)
 	}
-	defer dstFile.Close()
+	defer goFile.Close()
 
-	// Копируем содержимое
-	_, err = io.Copy(dstFile, srcFile)
+	// Записываем содержимое .txt в .go
+	_, err = goFile.Write(migrationFileText)
 	if err != nil {
-		return fmt.Errorf("error copying file: %v", err)
+		log.Warn("error writing to file db/models.go")
+		return fmt.Errorf("error writing content: %v", err)
 	}
 
 	log.Info("The file was successfully copied from " + migrationFilename + " into " + strings.TrimPrefix(modelsFilename, "../"))
