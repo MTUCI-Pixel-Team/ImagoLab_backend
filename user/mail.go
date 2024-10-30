@@ -3,11 +3,8 @@ package user
 import (
 	"RestAPI/core"
 	"bytes"
-	"encoding/hex"
 	"fmt"
-	"time"
 
-	"golang.org/x/exp/rand"
 	"gopkg.in/gomail.v2"
 )
 
@@ -80,19 +77,4 @@ func SendResetPasswordEmail(toEmail, resetToken string) error {
 	m.SetBody("text/html", msgHTML)
 
 	return d.DialAndSend(m)
-}
-
-func generateActivationCode() int {
-	rand.Seed(uint64(time.Now().UnixNano()))
-	return rand.Intn(99999) + 100000
-}
-
-func generateSecureToken() (string, error) {
-	rand.Seed(uint64(time.Now().UnixNano()))
-	bytes := make([]byte, 16)
-	_, err := rand.Read(bytes)
-	if err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(bytes), nil
 }
