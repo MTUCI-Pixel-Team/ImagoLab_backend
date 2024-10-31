@@ -5,9 +5,11 @@ package core
 */
 
 import (
+	"errors"
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"text/template"
 	"time"
 
@@ -30,13 +32,12 @@ var APPS = []string{
 	"pictureGeneration",
 }
 
-const (
+var (
 	// Настройки сервера
-	HOST          string        = "localhost"
+	PRODUCTION    bool          = false
+	HOST          string        = "0.0.0.0"
 	HTTP_PORT     int           = 8082
 	HTTPS_PORT    int           = 8446
-	CERT_FILE     string        = "/home/user/etc/ssl/certs/dev.crt"
-	KEY_FILE      string        = "/home/user/etc/ssl/private/dev.key"
 	CONN_TIMEOUT  time.Duration = 20
 	WRITE_TIMEOUT time.Duration = 20
 	BUFSIZE       int           = 5 * 1024 * 1024
@@ -95,6 +96,14 @@ var (
 )
 
 /*
+Настройки сертификатов
+*/
+var (
+	CERT_FILE string
+	KEY_FILE  string
+)
+
+/*
 Шаблоны
 */
 var (
@@ -136,44 +145,51 @@ var (
 */
 func InitEnv(paths ...string) error {
 	var err error
-	if len(paths) > 0 {
-		err = godotenv.Load(paths...)
-	} else {
-		err = godotenv.Load()
-	}
-	if err != nil {
-		log.Fatalf("Error env load %v", err)
-		return err
+	if !PRODUCTION {
+		if len(paths) > 0 {
+			err = godotenv.Load(paths...)
+		} else {
+			err = godotenv.Load()
+		}
+		if err != nil {
+			log.Fatalf("Error env load %v", err)
+			return err
+		}
 	}
 
 	JWT_ACCESS_SECRET_KEY = os.Getenv("JWT_ACCESS_SECRET_KEY")
 	JWT_REFRESH_SECRET_KEY = os.Getenv("JWT_REFRESH_SECRET_KEY")
 	if JWT_ACCESS_SECRET_KEY == "" || JWT_REFRESH_SECRET_KEY == "" {
+		err = errors.New("JWT keys not found")
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
 
 	DB_CREDENTIALS.Password = os.Getenv("DB_PASSWORD")
 	if DB_CREDENTIALS.Password == "" {
+		err = errors.New("DB password not found")
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
 
-	FIREBASE_API_KEY = os.Getenv("FIREBASE_API_KEY")
-	RECAPTCHA_KEY = os.Getenv("RECAPTCHA_KEY")
-	if FIREBASE_API_KEY == "" || RECAPTCHA_KEY == "" {
+	CERT_FILE = os.Getenv("SSL_CERT_PATH")
+	KEY_FILE = os.Getenv("SSL_KEY_PATH")
+	if CERT_FILE == "" || KEY_FILE == "" {
+		err = errors.New("Cert or key file not found")
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
 
 	MAIL_PASSWORD = os.Getenv("MAIL_PASSWORD")
 	if MAIL_PASSWORD == "" {
+		err = errors.New("Mail password not found")
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
 
 	MAIL_TEMPLATES_PATH = os.Getenv("MAIL_TEMPLATES_PATH")
 	if MAIL_TEMPLATES_PATH == "" {
+		err = errors.New("Mail templates path not found")
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
@@ -181,14 +197,36 @@ func InitEnv(paths ...string) error {
 	ACTIVATE_EMAIL_TEMPLATE, err = template.ParseFiles(filepath.Join(MAIL_TEMPLATES_PATH, "Activate.html"))
 	RESET_PASSWORD_TEMPLATE, err = template.ParseFiles(filepath.Join(MAIL_TEMPLATES_PATH, "ResetPass.html"))
 	if err != nil {
+		err = errors.New("Error parsing mail templates")
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
 
 	RUNWARE_API_KEY = os.Getenv("RUNWARE_API_KEY")
 	if RUNWARE_API_KEY == "" {
+		err = errors.New("Runware API key not found")
 		log.Fatalf("Error env load %v", err)
 		return err
+	}
+
+	if os.Getenv("HTTPS_PORT") != "" {
+		HTTPS_PORT, err = strconv.Atoi(os.Getenv("HTTPS_POST"))
+		if err != nil {
+			log.Fatalf("Error env load %v", err)
+			return err
+		}
+	}
+
+	if os.Getenv("HTTP_PORT") != "" {
+		HTTPS_PORT, err = strconv.Atoi(os.Getenv("HTTP_POST"))
+		if err != nil {
+			log.Fatalf("Error env load %v", err)
+			return err
+		}
+	}
+
+	if os.Getenv("AVATARS_DIR") != "" {
+		AVATARS_DIR = os.Getenv("AVATARS_DIR")
 	}
 
 	return nil
