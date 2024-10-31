@@ -20,8 +20,653 @@
         
 
         <section>
+            <h2>image</h2>
+            <div class="content">
+                
+
+                <div class="route-block">
+
+                    <div class="route-header patch">
+                        <div class="route-type">
+                            <span class="method post">POST</span>
+                            /image/generate
+                        </div>
+                        <div>
+                            
+                            <span class="auth-required">🔒</span>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Generate an image using the given data</p>
+                        
+                        
+
+                        
+
+                        
+
+                        
+
+                        <div class="type-selection">
+                            <h4>Request body:</h4>
+                            <label for="content-type-GenerateImage">Select Content Type:</label>
+                            <select id="content-type-GenerateImage" name="content-type">
+                                
+                                <option value="multipart/form-data">multipart/form-data</option>
+                                
+                            </select><br>
+                        </div>
+
+                        
+
+
+                        <button class="try-it-out patch">Try it out</button>
+
+                        
+
+                        <div class="example-value">
+                            <p>Example value</p>
+                            
+                            <div class="json-example json-example-GenerateImage">
+                                <pre>{
+	&#34;taskType&#34;: &#34;string&#34;,
+	&#34;taskUUID&#34;: &#34;string&#34;,
+	&#34;outputType&#34;: [&#34;string&#34;],
+	&#34;outputFormat&#34;: &#34;string&#34;,
+	&#34;positivePrompt&#34;: &#34;string&#34;,
+	&#34;negativePrompt&#34;: &#34;string&#34;,
+	&#34;height&#34;: int,
+	&#34;width&#34;: int,
+	&#34;model&#34;: &#34;string&#34;,
+	&#34;steps&#34;: int,
+	&#34;CFGScale&#34;: float64,
+	&#34;numberResults&#34;: int,
+	&#34;scheduler&#34;: &#34;string&#34;,
+	&#34;seed&#34;: int
+}
+</pre>
+                            </div>
+                            
+                            
+
+                        </div>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-GenerateImage" class="request-form" data-url="/image/generate">
+
+                                
+
+                                <textarea id="json-input-GenerateImage" name="json-body" placeholder='{
+	&#34;taskType&#34;: &#34;string&#34;,
+	&#34;taskUUID&#34;: &#34;string&#34;,
+	&#34;outputType&#34;: [&#34;string&#34;],
+	&#34;outputFormat&#34;: &#34;string&#34;,
+	&#34;positivePrompt&#34;: &#34;string&#34;,
+	&#34;negativePrompt&#34;: &#34;string&#34;,
+	&#34;height&#34;: int,
+	&#34;width&#34;: int,
+	&#34;model&#34;: &#34;string&#34;,
+	&#34;steps&#34;: int,
+	&#34;CFGScale&#34;: float64,
+	&#34;numberResults&#34;: int,
+	&#34;scheduler&#34;: &#34;string&#34;,
+	&#34;seed&#34;: int
+}
+'
+                                    style="display: none;" required>{
+	&#34;taskType&#34;: &#34;string&#34;,
+	&#34;taskUUID&#34;: &#34;string&#34;,
+	&#34;outputType&#34;: [&#34;string&#34;],
+	&#34;outputFormat&#34;: &#34;string&#34;,
+	&#34;positivePrompt&#34;: &#34;string&#34;,
+	&#34;negativePrompt&#34;: &#34;string&#34;,
+	&#34;height&#34;: int,
+	&#34;width&#34;: int,
+	&#34;model&#34;: &#34;string&#34;,
+	&#34;steps&#34;: int,
+	&#34;CFGScale&#34;: float64,
+	&#34;numberResults&#34;: int,
+	&#34;scheduler&#34;: &#34;string&#34;,
+	&#34;seed&#34;: int
+}
+</textarea>
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>[{
+    &#34;ID&#34;: int,
+    &#34;CreatedAt&#34;: &#34;time&#34;,
+    &#34;UpdatedAt&#34;: &#34;time&#34;,
+    &#34;DeletedAt&#34;: time,
+    &#34;UserID&#34;: int,
+    &#34;url&#34;: &#34;string&#34;
+}]
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                <div class="route-block">
+
+                    <div class="route-header get">
+                        <div class="route-type">
+                            <span class="method get">GET</span>
+                            /image/get
+                        </div>
+                        <div>
+                            
+                            <span class="auth-required">🔒</span>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Get all images of the user</p>
+                        
+                        
+
+                        
+                        <div class="query-params">
+                            <h4>Query Parameters:</h4>
+                            <ul>
+                                
+                                <p> limit : int</p>
+                                
+                                <p> page : int</p>
+                                
+                            </ul>
+                        </div>
+                        
+
+                        
+
+                        
+
+
+                        <button class="try-it-out get">Try it out</button>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-GetImages" class="request-form" data-url="/image/get">
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button get">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;total&#34;: int,
+	&#34;total_pages&#34;: int,
+	&#34;current_page&#34;: int,
+	&#34;items&#34;: [{
+		&#34;ID&#34;: int,
+		&#34;CreatedAt&#34;: &#34;time&#34;,
+		&#34;UpdatedAt&#34;: &#34;time&#34;,
+		&#34;DeletedAt&#34;: time,
+		&#34;UserID&#34;: int,
+		&#34;url&#34;: &#34;string&#34;
+	}]
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+            </div>
+        </section>
+
+        
+
+        <section>
             <h2>user</h2>
             <div class="content">
+                
+
+                <div class="route-block">
+
+                    <div class="route-header post">
+                        <div class="route-type">
+                            <span class="method post">POST</span>
+                            /user/reset_password
+                        </div>
+                        <div>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Reset password</p>
+                        
+                        
+                        <p><strong>Description:</strong> Reset password by reset code</p>
+                        
+
+                        
+
+                        
+
+                        
+
+                        <div class="type-selection">
+                            <h4>Request body:</h4>
+                            <label for="content-type-ResetPasswordHandler">Select Content Type:</label>
+                            <select id="content-type-ResetPasswordHandler" name="content-type">
+                                
+                                <option value="application/json">application/json</option>
+                                
+                            </select><br>
+                        </div>
+
+                        
+
+
+                        <button class="try-it-out post">Try it out</button>
+
+                        
+
+                        <div class="example-value">
+                            <p>Example value</p>
+                            
+                            <div class="json-example json-example-ResetPasswordHandler">
+                                <pre>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;reset_token*&#34;: string,
+	&#34;password*&#34;: &#34;string&#34;
+}
+</pre>
+                            </div>
+                            
+                            
+
+                        </div>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-ResetPasswordHandler" class="request-form" data-url="/user/reset_password">
+
+                                
+
+                                <textarea id="json-input-ResetPasswordHandler" name="json-body" placeholder='{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;reset_token*&#34;: string,
+	&#34;password*&#34;: &#34;string&#34;
+}
+'
+                                    style="display: none;" required>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;reset_token*&#34;: string,
+	&#34;password*&#34;: &#34;string&#34;
+}
+</textarea>
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;Message&#34;: &#34;string&#34;
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                <div class="route-block">
+
+                    <div class="route-header post">
+                        <div class="route-type">
+                            <span class="method post">POST</span>
+                            /user/activate
+                        </div>
+                        <div>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Activate user account</p>
+                        
+                        
+                        <p><strong>Description:</strong> Activate user account by activation code</p>
+                        
+
+                        
+
+                        
+
+                        
+
+                        <div class="type-selection">
+                            <h4>Request body:</h4>
+                            <label for="content-type-ActivateAccount">Select Content Type:</label>
+                            <select id="content-type-ActivateAccount" name="content-type">
+                                
+                                <option value="application/json">application/json</option>
+                                
+                            </select><br>
+                        </div>
+
+                        
+
+
+                        <button class="try-it-out post">Try it out</button>
+
+                        
+
+                        <div class="example-value">
+                            <p>Example value</p>
+                            
+                            <div class="json-example json-example-ActivateAccount">
+                                <pre>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;otp*&#34;: int
+}
+</pre>
+                            </div>
+                            
+                            
+
+                        </div>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-ActivateAccount" class="request-form" data-url="/user/activate">
+
+                                
+
+                                <textarea id="json-input-ActivateAccount" name="json-body" placeholder='{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;otp*&#34;: int
+}
+'
+                                    style="display: none;" required>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;otp*&#34;: int
+}
+</textarea>
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;Message&#34;: &#34;string&#34;
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                <div class="route-block">
+
+                    <div class="route-header post">
+                        <div class="route-type">
+                            <span class="method post">POST</span>
+                            /user/auth
+                        </div>
+                        <div>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Get user by id</p>
+                        
+                        
+                        <p><strong>Description:</strong> Get user by id from the database</p>
+                        
+
+                        
+
+                        
+
+                        
+
+
+                        <button class="try-it-out get">Try it out</button>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-GetUserHandler" class="request-form" data-url="/user/get/%7bint:ID%7d">
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button get">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;ID&#34;: int,
+	&#34;CreatedAt&#34;: &#34;time&#34;,
+	&#34;UpdatedAt&#34;: &#34;time&#34;,
+	&#34;DeletedAt&#34;: time,
+	&#34;username&#34;: &#34;string&#34;,
+	&#34;is_active&#34;: bool,
+	&#34;email&#34;: &#34;string&#34;
+}
+</pre>
+                            </div>
+                            
+                            
+
+                        </div>
+
+                        
+
+                <div class="route-block">
+
+                    <div class="route-header get">
+                        <div class="route-type">
+                            <span class="method get">GET</span>
+                            /user/me
+                        </div>
+                        <div>
+                            
+                            <span class="auth-required">🔒</span>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Get user by token</p>
+                        
+                        
+                        <p><strong>Description:</strong> Get user by token</p>
+                        
+
+                        
+
+                        
+
+                        
+
+
+                        <button class="try-it-out get">Try it out</button>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-GetMeHandler" class="request-form" data-url="/user/me">
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;CreatedAt&#34;: time,
+	&#34;UpdatedAt&#34;: time,
+	&#34;DeletedAt&#34;: time,
+	&#34;UserID&#34;: int,
+	&#34;AccessToken&#34;: &#34;string&#34;,
+	&#34;RefreshToken&#34;: &#34;string&#34;
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
                 
 
                 <div class="route-block">
@@ -46,6 +691,11 @@
                         
                         <p><strong>Description:</strong> Update user with the given data and save it to the database</p>
                         
+
+                        
+
+                        
+
                         
 
                         <div class="type-selection">
@@ -213,603 +863,7 @@
 
                 <div class="route-block">
 
-                    <div class="route-header post">
-                        <div class="route-type">
-                            <span class="method post">POST</span>
-                            /user/reset_password
-                        </div>
-                        <div>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        
-                        <p><strong>Summary:</strong> Reset password</p>
-                        
-                        
-                        <p><strong>Description:</strong> Reset password by reset code</p>
-                        
-                        
-
-                        <div class="type-selection">
-                            <h4>Request body:</h4>
-                            <label for="content-type-ResetPasswordHandler">Select Content Type:</label>
-                            <select id="content-type-ResetPasswordHandler" name="content-type">
-                                
-                                <option value="application/json">application/json</option>
-                                
-                            </select><br>
-                        </div>
-
-                        
-
-
-                        <button class="try-it-out post">Try it out</button>
-
-                        
-
-                        <div class="example-value">
-                            <p>Example value</p>
-                            
-                            <div class="json-example json-example-ResetPasswordHandler">
-                                <pre>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;reset_token*&#34;: string,
-	&#34;password*&#34;: &#34;string&#34;
-}
-</pre>
-                            </div>
-                            
-                            
-
-                        </div>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-ResetPasswordHandler" class="request-form" data-url="/user/reset_password">
-
-                                
-
-                                <textarea id="json-input-ResetPasswordHandler" name="json-body" placeholder='{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;reset_token*&#34;: string,
-	&#34;password*&#34;: &#34;string&#34;
-}
-'
-                                    style="display: none;" required>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;reset_token*&#34;: string,
-	&#34;password*&#34;: &#34;string&#34;
-}
-</textarea>
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button post">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;Message&#34;: &#34;string&#34;
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
-                    <div class="route-header post">
-                        <div class="route-type">
-                            <span class="method post">POST</span>
-                            /user/activate
-                        </div>
-                        <div>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        
-                        <p><strong>Summary:</strong> Activate user account</p>
-                        
-                        
-                        <p><strong>Description:</strong> Activate user account by activation code</p>
-                        
-                        
-
-                        <div class="type-selection">
-                            <h4>Request body:</h4>
-                            <label for="content-type-ActivateAccount">Select Content Type:</label>
-                            <select id="content-type-ActivateAccount" name="content-type">
-                                
-                                <option value="application/json">application/json</option>
-                                
-                            </select><br>
-                        </div>
-
-                        
-
-
-                        <button class="try-it-out post">Try it out</button>
-
-                        
-
-                        <div class="example-value">
-                            <p>Example value</p>
-                            
-                            <div class="json-example json-example-ActivateAccount">
-                                <pre>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;otp*&#34;: int
-}
-</pre>
-                            </div>
-                            
-                            
-
-                        </div>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-ActivateAccount" class="request-form" data-url="/user/activate">
-
-                                
-
-                                <textarea id="json-input-ActivateAccount" name="json-body" placeholder='{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;otp*&#34;: int
-}
-'
-                                    style="display: none;" required>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;otp*&#34;: int
-}
-</textarea>
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button post">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;Message&#34;: &#34;string&#34;
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
-                    <div class="route-header post">
-                        <div class="route-type">
-                            <span class="method post">POST</span>
-                            /user/auth
-                        </div>
-                        <div>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        
-                        <p><strong>Summary:</strong> Authentification user</p>
-                        
-                        
-                        
-
-                        <div class="type-selection">
-                            <h4>Request body:</h4>
-                            <label for="content-type-AuthUserHandler">Select Content Type:</label>
-                            <select id="content-type-AuthUserHandler" name="content-type">
-                                
-                                <option value="application/json">application/json</option>
-                                
-                            </select><br>
-                        </div>
-
-                        
-
-
-                        <button class="try-it-out post">Try it out</button>
-
-                        
-
-                        <div class="example-value">
-                            <p>Example value</p>
-                            
-                            <div class="json-example json-example-AuthUserHandler">
-                                <pre>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;password*&#34;: &#34;string&#34;
-}
-</pre>
-                            </div>
-                            
-                            
-
-                        </div>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-AuthUserHandler" class="request-form" data-url="/user/auth">
-
-                                
-
-                                <textarea id="json-input-AuthUserHandler" name="json-body" placeholder='{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;password*&#34;: &#34;string&#34;
-}
-'
-                                    style="display: none;" required>{
-	&#34;email*&#34;: &#34;string&#34;,
-	&#34;password*&#34;: &#34;string&#34;
-}
-</textarea>
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button post">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;CreatedAt&#34;: time,
-	&#34;UpdatedAt&#34;: time,
-	&#34;DeletedAt&#34;: time,
-	&#34;UserID&#34;: int,
-	&#34;AccessToken&#34;: &#34;string&#34;,
-	&#34;RefreshToken&#34;: &#34;string&#34;
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
-                    <div class="route-header post">
-                        <div class="route-type">
-                            <span class="method post">POST</span>
-                            /user/refresh
-                        </div>
-                        <div>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        
-                        <p><strong>Summary:</strong> Refresh tokens</p>
-                        
-                        
-                        
-
-                        <div class="type-selection">
-                            <h4>Request body:</h4>
-                            <label for="content-type-RefreshTokenHandler">Select Content Type:</label>
-                            <select id="content-type-RefreshTokenHandler" name="content-type">
-                                
-                                <option value="application/json">application/json</option>
-                                
-                            </select><br>
-                        </div>
-
-                        
-
-
-                        <button class="try-it-out post">Try it out</button>
-
-                        
-
-                        <div class="example-value">
-                            <p>Example value</p>
-                            
-                            <div class="json-example json-example-RefreshTokenHandler">
-                                <pre>{
-	&#34;refresh_token*&#34;: &#34;string&#34;
-}
-</pre>
-                            </div>
-                            
-                            
-
-                        </div>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-RefreshTokenHandler" class="request-form" data-url="/user/refresh">
-
-                                
-
-                                <textarea id="json-input-RefreshTokenHandler" name="json-body" placeholder='{
-	&#34;refresh_token*&#34;: &#34;string&#34;
-}
-'
-                                    style="display: none;" required>{
-	&#34;refresh_token*&#34;: &#34;string&#34;
-}
-</textarea>
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button post">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;CreatedAt&#34;: time,
-	&#34;UpdatedAt&#34;: time,
-	&#34;DeletedAt&#34;: time,
-	&#34;UserID&#34;: int,
-	&#34;AccessToken&#34;: &#34;string&#34;,
-	&#34;RefreshToken&#34;: &#34;string&#34;
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
                     <div class="route-header get">
-                        <div class="route-type">
-                            <span class="method get">GET</span>
-                            /user/get/{int:ID}
-                        </div>
-                        <div>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        
-                        <p><strong>Summary:</strong> Get user by id</p>
-                        
-                        
-                        <p><strong>Description:</strong> Get user by id from the database</p>
-                        
-                        
-
-
-                        <button class="try-it-out get">Try it out</button>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-GetUserHandler" class="request-form" data-url="/user/get/%7bint:ID%7d">
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button get">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;ID&#34;: int,
-	&#34;CreatedAt&#34;: &#34;time&#34;,
-	&#34;UpdatedAt&#34;: &#34;time&#34;,
-	&#34;DeletedAt&#34;: time,
-	&#34;username&#34;: &#34;string&#34;,
-	&#34;is_active&#34;: bool,
-	&#34;email&#34;: &#34;string&#34;
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
-                    <div class="route-header get">
-                        <div class="route-type">
-                            <span class="method get">GET</span>
-                            /user/me
-                        </div>
-                        <div>
-                            
-                            <span class="auth-required">🔒</span>
-                            
-                            <span>▼</span>
-                        </div>
-                    </div>
-
-                    <div class="route-info">
-                        
-                        <p><strong>Summary:</strong> Get user by token</p>
-                        
-                        
-                        <p><strong>Description:</strong> Get user by token</p>
-                        
-                        
-
-
-                        <button class="try-it-out get">Try it out</button>
-
-                        
-
-                        <div class="try-it" style="display:none;">
-                            <button class="return-from-try">Cancel</button>
-                            <form id="request-form-GetMeHandler" class="request-form" data-url="/user/me">
-
-                                
-
-                                
-
-                                <button type="submit" class="submit-button get">Execute</button>
-                                <button type="button" class="back-button" style="display: none;">Back</button>
-                            </form>
-
-
-
-                        </div>
-
-                        
-
-                        <div class="response">
-                            <h4>Response: </h4>
-                            <div class="example-response">
-                                <p>Example value: application/json</p>
-                                <div class="code-block">
-                                    <pre>{
-	&#34;ID&#34;: int,
-	&#34;CreatedAt&#34;: &#34;time&#34;,
-	&#34;UpdatedAt&#34;: &#34;time&#34;,
-	&#34;DeletedAt&#34;: time,
-	&#34;username&#34;: &#34;string&#34;,
-	&#34;is_active&#34;: bool,
-	&#34;email&#34;: &#34;string&#34;
-}
-</pre>
-                                </div>
-                            </div>
-                            <div class="response-result" , style="display:none;">
-
-                            </div>
-
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                
-
-                <div class="route-block">
-
-                    <div class="route-header post">
                         <div class="route-type">
                             <span class="method post">POST</span>
                             /user/send_reset_password_mail
@@ -827,6 +881,11 @@
                         
                         <p><strong>Description:</strong> Send mail with reset code to the user&#39;s email</p>
                         
+
+                        
+
+                        
+
                         
 
                         <div class="type-selection">
@@ -881,7 +940,7 @@
 
                                 
 
-                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="submit" class="submit-button get">Execute</button>
                                 <button type="button" class="back-button" style="display: none;">Back</button>
                             </form>
 
@@ -897,7 +956,13 @@
                                 <p>Example value: application/json</p>
                                 <div class="code-block">
                                     <pre>{
-	&#34;Message&#34;: &#34;string&#34;
+	&#34;ID&#34;: int,
+	&#34;CreatedAt&#34;: &#34;time&#34;,
+	&#34;UpdatedAt&#34;: &#34;time&#34;,
+	&#34;DeletedAt&#34;: time,
+	&#34;username&#34;: &#34;string&#34;,
+	&#34;is_active&#34;: bool,
+	&#34;email&#34;: &#34;string&#34;
 }
 </pre>
                                 </div>
@@ -934,6 +999,11 @@
                         
                         <p><strong>Description:</strong> Create a new user with the given data and save it to the database</p>
                         
+
+                        
+
+                        
+
                         
 
                         <div class="type-selection">
@@ -1053,6 +1123,11 @@
                         
                         <p><strong>Description:</strong> Send activation code to the user&#39;s email</p>
                         
+
+                        
+
+                        
+
                         
 
                         <div class="type-selection">
@@ -1124,6 +1199,239 @@
                                 <div class="code-block">
                                     <pre>{
 	&#34;Message&#34;: &#34;string&#34;
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                <div class="route-block">
+
+                    <div class="route-header post">
+                        <div class="route-type">
+                            <span class="method post">POST</span>
+                            /user/auth
+                        </div>
+                        <div>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Authentification user</p>
+                        
+                        
+
+                        
+
+                        
+
+                        
+
+                        <div class="type-selection">
+                            <h4>Request body:</h4>
+                            <label for="content-type-AuthUserHandler">Select Content Type:</label>
+                            <select id="content-type-AuthUserHandler" name="content-type">
+                                
+                                <option value="application/json">application/json</option>
+                                
+                            </select><br>
+                        </div>
+
+                        
+
+
+                        <button class="try-it-out post">Try it out</button>
+
+                        
+
+                        <div class="example-value">
+                            <p>Example value</p>
+                            
+                            <div class="json-example json-example-AuthUserHandler">
+                                <pre>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;password*&#34;: &#34;string&#34;
+}
+</pre>
+                            </div>
+                            
+                            
+
+                        </div>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-AuthUserHandler" class="request-form" data-url="/user/auth">
+
+                                
+
+                                <textarea id="json-input-AuthUserHandler" name="json-body" placeholder='{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;password*&#34;: &#34;string&#34;
+}
+'
+                                    style="display: none;" required>{
+	&#34;email*&#34;: &#34;string&#34;,
+	&#34;password*&#34;: &#34;string&#34;
+}
+</textarea>
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;CreatedAt&#34;: time,
+	&#34;UpdatedAt&#34;: time,
+	&#34;DeletedAt&#34;: time,
+	&#34;UserID&#34;: int,
+	&#34;AccessToken&#34;: &#34;string&#34;,
+	&#34;RefreshToken&#34;: &#34;string&#34;
+}
+</pre>
+                                </div>
+                            </div>
+                            <div class="response-result" , style="display:none;">
+
+                            </div>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                <div class="route-block">
+
+                    <div class="route-header post">
+                        <div class="route-type">
+                            <span class="method post">POST</span>
+                            /user/refresh
+                        </div>
+                        <div>
+                            
+                            <span>▼</span>
+                        </div>
+                    </div>
+
+                    <div class="route-info">
+                        
+                        <p><strong>Summary:</strong> Refresh tokens</p>
+                        
+                        
+
+                        
+
+                        
+
+                        
+
+                        <div class="type-selection">
+                            <h4>Request body:</h4>
+                            <label for="content-type-RefreshTokenHandler">Select Content Type:</label>
+                            <select id="content-type-RefreshTokenHandler" name="content-type">
+                                
+                                <option value="application/json">application/json</option>
+                                
+                            </select><br>
+                        </div>
+
+                        
+
+
+                        <button class="try-it-out post">Try it out</button>
+
+                        
+
+                        <div class="example-value">
+                            <p>Example value</p>
+                            
+                            <div class="json-example json-example-RefreshTokenHandler">
+                                <pre>{
+	&#34;refresh_token*&#34;: &#34;string&#34;
+}
+</pre>
+                            </div>
+                            
+                            
+
+                        </div>
+
+                        
+
+                        <div class="try-it" style="display:none;">
+                            <button class="return-from-try">Cancel</button>
+                            <form id="request-form-RefreshTokenHandler" class="request-form" data-url="/user/refresh">
+
+                                
+
+                                <textarea id="json-input-RefreshTokenHandler" name="json-body" placeholder='{
+	&#34;refresh_token*&#34;: &#34;string&#34;
+}
+'
+                                    style="display: none;" required>{
+	&#34;refresh_token*&#34;: &#34;string&#34;
+}
+</textarea>
+
+                                
+
+                                
+
+                                <button type="submit" class="submit-button post">Execute</button>
+                                <button type="button" class="back-button" style="display: none;">Back</button>
+                            </form>
+
+
+
+                        </div>
+
+                        
+
+                        <div class="response">
+                            <h4>Response: </h4>
+                            <div class="example-response">
+                                <p>Example value: application/json</p>
+                                <div class="code-block">
+                                    <pre>{
+	&#34;CreatedAt&#34;: time,
+	&#34;UpdatedAt&#34;: time,
+	&#34;DeletedAt&#34;: time,
+	&#34;UserID&#34;: int,
+	&#34;AccessToken&#34;: &#34;string&#34;,
+	&#34;RefreshToken&#34;: &#34;string&#34;
 }
 </pre>
                                 </div>

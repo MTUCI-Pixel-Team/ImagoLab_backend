@@ -2,7 +2,9 @@ package user
 
 import (
 	"RestAPI/core"
+	"RestAPI/db"
 	"errors"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -243,6 +245,196 @@ func TestSendActivationEmail(t *testing.T) {
 				if err != nil {
 					t.Errorf("Unexpected error: %v", err)
 				}
+			}
+		})
+	}
+}
+
+func TestCheckDomain(t *testing.T) {
+	testCases := []struct {
+		name        string
+		email       string
+		expectedRes bool
+	}{
+		{
+			name:        "Valid Email",
+			email:       "test@gmail.com",
+			expectedRes: true,
+		},
+		{
+			name:        "Invalid Email",
+			email:       "meger52934@aqqor.com",
+			expectedRes: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res := CheckDomain(tc.email)
+			if res != tc.expectedRes {
+				t.Errorf("Expected %v, got %v", tc.expectedRes, res)
+			}
+		})
+	}
+
+}
+
+func TestValidateUser(t *testing.T) {
+	testCases := []struct {
+		name        string
+		user        *db.User
+		expectedErr bool
+	}{
+		{
+			name: "Valid User",
+			user: &db.User{
+				Email:    "test22@gmail.com",
+				Username: "testuser",
+				Password: "Asdf777!",
+			},
+			expectedErr: false,
+		},
+		{
+			name: "Empty Email",
+			user: &db.User{
+				Email:    "",
+				Username: "testuser",
+				Password: "Asdf777!",
+			},
+			expectedErr: true,
+		},
+		{
+			name: "Empty Username",
+			user: &db.User{
+				Email:    "test22@gmail.com",
+				Username: "",
+				Password: "Asdf777!",
+			},
+			expectedErr: true,
+		},
+		{
+			name: "Invalid Password",
+			user: &db.User{
+				Email:    "test22@gmail.com",
+				Username: "testuser",
+				Password: "12345678qa",
+			},
+			expectedErr: true,
+		},
+		{
+			name: "Invalid Email",
+			user: &db.User{
+				Email:    "xijami2184@aleitar.com",
+				Username: "testuser",
+				Password: "Asdf777!",
+			},
+			expectedErr: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			user, err := ValidateUser(tc.user)
+			if user != tc.user {
+				t.Errorf("Expected user: %v, got: %v", tc.user, user)
+			}
+			if tc.expectedErr {
+				if err == nil {
+					t.Errorf("Expected error, got nil")
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+			}
+		})
+	}
+}
+
+func TestFilterFields(t *testing.T) {
+	testCases := []struct {
+		name        string
+		user        *db.User
+		keepFields  []string
+		expectedRes *db.User
+	}{
+		{
+			name: "Filter Email",
+			user: &db.User{
+				Email:    "test@example.com",
+				Username: "testuser",
+				Password: "Asdf777!",
+			},
+			keepFields: []string{"Username", "Password"},
+			expectedRes: &db.User{
+				Username: "testuser",
+				Password: "Asdf777!",
+				Email:    "",
+			},
+		},
+		{
+			name: "Filter Username",
+			user: &db.User{
+				Email:    "test@example.com",
+				Username: "testuser",
+				Password: "Asdf777!",
+			},
+			keepFields: []string{"Email", "Password"},
+			expectedRes: &db.User{
+				Email:    "test@example.com",
+				Password: "Asdf777!",
+				Username: "",
+			},
+		},
+		{
+			name:       "Filter Password",
+			keepFields: []string{"Email", "Username"},
+			user: &db.User{
+				Email:    "test@example.com",
+				Username: "testuser",
+				Password: "Asdf777!",
+			},
+			expectedRes: &db.User{
+				Email:    "test@example.com",
+				Username: "testuser",
+				Password: "",
+			},
+		},
+		{
+			name: "Don't Filter",
+			user: &db.User{
+				Email:    "test@example.com",
+				Username: "testuser",
+				Password: "Asdf777!",
+			},
+			keepFields: []string{},
+			expectedRes: &db.User{
+				Email:    "test@example.com",
+				Username: "testuser",
+				Password: "Asdf777!",
+			},
+		},
+		{
+			name: "Random Fields",
+			user: &db.User{
+				Email:    "test@example.com",
+				Username: "testuser",
+				Password: "Asdf777!",
+			},
+			keepFields: []string{"Random", "Fields"},
+			expectedRes: &db.User{
+				Email:    "test@example.com",
+				Username: "testuser",
+				Password: "Asdf777!",
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := FilterFields(tc.user, tc.keepFields)
+			if !reflect.DeepEqual(result, tc.expectedRes) {
+				t.Errorf("Expected user: %v, got: %v", tc.expectedRes, result)
 			}
 		})
 	}

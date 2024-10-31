@@ -14,6 +14,8 @@ type HandlerInfo struct {
 	Name            string
 	Path            string
 	Method          string
+	QueryParams     map[string]string
+	PathParams      map[string]string
 	ReqContentTypes []string
 	RespContentType string
 	Summary         string
@@ -105,6 +107,38 @@ func parseFile(path string) {
 				case "isauth":
 					if value == "true" || value == "false" {
 						handlerInfo.IsAuth = value
+					}
+				case "queryparams":
+					reg := regexp.MustCompile(`\{([^}]*)\}`)
+					matches := reg.FindStringSubmatch(value)
+					if len(matches) > 1 {
+						handlerInfo.QueryParams = make(map[string]string)
+						lines := strings.Split(value, "\n")
+						for _, line := range lines {
+							trimmedLine := strings.TrimPrefix(line, "	")
+							parts := strings.Split(trimmedLine, ":")
+							if len(parts) == 2 {
+								formatedKey := strings.ReplaceAll(strings.ReplaceAll(strings.TrimSpace(parts[0]), `"`, ""), `,`, "")
+								formatedValue := strings.ReplaceAll(strings.ReplaceAll(strings.TrimSpace(parts[1]), `"`, ""), `,`, "")
+								handlerInfo.QueryParams[formatedKey] = formatedValue
+							}
+						}
+					}
+				case "pathparams":
+					reg := regexp.MustCompile(`\{([^}]*)\}`)
+					matches := reg.FindStringSubmatch(value)
+					if len(matches) > 1 {
+						handlerInfo.PathParams = make(map[string]string)
+						lines := strings.Split(value, "\n")
+						for _, line := range lines {
+							trimmedLine := strings.TrimPrefix(line, "	")
+							parts := strings.Split(trimmedLine, ":")
+							if len(parts) == 2 {
+								formatedKey := strings.ReplaceAll(strings.ReplaceAll(strings.TrimSpace(parts[0]), `"`, ""), `,`, "")
+								formatedValue := strings.ReplaceAll(strings.ReplaceAll(strings.TrimSpace(parts[1]), `"`, ""), `,`, "")
+								handlerInfo.PathParams[formatedKey] = formatedValue
+							}
+						}
 					}
 				case "req_content_type":
 					for _, ct := range strings.Split(value, ",") {

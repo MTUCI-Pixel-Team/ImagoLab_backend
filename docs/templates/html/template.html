@@ -46,6 +46,29 @@
                         {{if .Description}}
                         <p><strong>Description:</strong> {{.Description}}</p>
                         {{end}}
+
+                        {{if .QueryParams}}
+                        <div class="query-params">
+                            <h4>Query Parameters:</h4>
+                            <ul>
+                                {{range $key, $value := .QueryParams}}
+                                <p> {{$key}} : {{$value}}</p>
+                                {{end}}
+                            </ul>
+                        </div>
+                        {{end}}
+
+                        {{if .PathParams}}
+                        <div class="path-params">
+                            <h4>Path Parameters:</h4>
+                            <ul>
+                                {{range $key, $value := .PathParams}}
+                                <p> {{$key}} : {{$value}}</p>
+                                {{end}}
+                            </ul>
+                        </div>
+                        {{end}}
+
                         {{if .ReqContentTypes}}
 
                         <div class="type-selection">

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"text/template"
 	"time"
 
@@ -27,6 +28,7 @@ type DBCredentials struct {
 */
 var APPS = []string{
 	"user",
+	"pictureGeneration",
 }
 
 var (
@@ -43,7 +45,6 @@ const (
 	WRITE_TIMEOUT time.Duration = 20
 	BUFSIZE       int           = 5 * 1024 * 1024
 	AVATARS_DIR   string        = "/media/images/avatars"
-
 	// Настройки мидлваров
 	IS_ALLOWED_HOSTS bool = true
 	REQ_MIDDLEWARE   bool = true
@@ -101,6 +102,7 @@ var (
 Шаблоны
 */
 var (
+	MAIL_TEMPLATES_PATH     string
 	ACTIVATE_EMAIL_TEMPLATE *template.Template
 	RESET_PASSWORD_TEMPLATE *template.Template
 )
@@ -124,6 +126,13 @@ var (
 	MAIL_PASSWORD string
 	OTP_EXP_TIME  time.Duration = time.Minute * 5
 	OTP_TIMEOUT   time.Duration = time.Minute * 1
+)
+
+/*
+Ranware settings
+*/
+var (
+	RUNWARE_API_KEY string
 )
 
 /*
@@ -168,13 +177,21 @@ func InitEnv(paths ...string) error {
 		return err
 	}
 
-	ACTIVATE_EMAIL_TEMPLATE, err = template.ParseFiles("user/templates/mail/Activate.html")
+	MAIL_TEMPLATES_PATH = os.Getenv("MAIL_TEMPLATES_PATH")
+	if MAIL_TEMPLATES_PATH == "" {
+		log.Fatalf("Error env load %v", err)
+		return err
+	}
+
+	ACTIVATE_EMAIL_TEMPLATE, err = template.ParseFiles(filepath.Join(MAIL_TEMPLATES_PATH, "Activate.html"))
+	RESET_PASSWORD_TEMPLATE, err = template.ParseFiles(filepath.Join(MAIL_TEMPLATES_PATH, "ResetPass.html"))
 	if err != nil {
 		log.Fatalf("Error env load %v", err)
 		return err
 	}
-	RESET_PASSWORD_TEMPLATE, err = template.ParseFiles("user/templates/mail/ResetPass.html")
-	if err != nil {
+
+	RUNWARE_API_KEY = os.Getenv("RUNWARE_API_KEY")
+	if RUNWARE_API_KEY == "" {
 		log.Fatalf("Error env load %v", err)
 		return err
 	}

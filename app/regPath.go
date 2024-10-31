@@ -3,6 +3,7 @@ package app
 import (
 	"RestAPI/docs"
 	"RestAPI/media"
+	pg "RestAPI/pictureGeneration"
 	"RestAPI/user"
 )
 
@@ -19,6 +20,7 @@ func InitHandlers() {
 	registerHandler("/api/docs/templates/css/styles.css", docs.GetDocsCSS, "docs")
 	registerHandler("/api/docs/templates/js/script.js", docs.GetDocsJS, "docs")
 	registerHandler("/images/{string:filename}", media.ImageHandler, "images")
+
 	registerHandler("/user/create", user.CreateUserHandler, "createUser")
 	registerHandler("/user/send_otp", user.SendOtpHandler, "sendOtp")
 	registerHandler("/user/activate", user.ActivateAccountHandler, "activateUser")
@@ -29,4 +31,7 @@ func InitHandlers() {
 	registerHandler("/user/reset_password", user.ResetPasswordHandler, "resetPassword")
 	registerHandler("/user/send_reset_password_mail", user.SendResetPasswordMailHandler, "sendReset")
 	registerHandler("/user/refresh", user.RefreshTokenHandler, "refreshToken")
+
+	registerHandler("/image/generate", pg.GenerateImageHandler, "generateImage")
+	registerHandler("/image/get", pg.GetImagesHandler, "getImage")
 }

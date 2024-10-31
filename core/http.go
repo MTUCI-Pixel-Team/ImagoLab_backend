@@ -68,7 +68,7 @@ func (rqst *HttpRequest) ParseRequest(buffer []byte) error {
 		return errors.New("Invalid request line")
 	}
 	rqst.Method = requestLine[0]
-	UrlAndQuery := strings.Split(requestLine[1], "/?")
+	UrlAndQuery := strings.Split(requestLine[1], "?")
 	rqst.Url = UrlAndQuery[0]
 	rqst.Version = requestLine[2]
 	if rqst.Method == "" || rqst.Url == "" || rqst.Version == "" {

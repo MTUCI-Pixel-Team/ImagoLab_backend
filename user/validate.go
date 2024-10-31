@@ -1,7 +1,9 @@
 package user
 
 import (
+	"RestAPI/db"
 	"fmt"
+	"reflect"
 	"regexp"
 	"strings"
 	"unicode"
@@ -56,7 +58,7 @@ func DefaultValidationRules() *ValidationRules {
 	}
 }
 
-func ValidateUser(user User) error {
+func ValidateUser(user *db.User, keepFields ...[]string) (*db.User, error) {
 	rules := DefaultValidationRules()
 	var errors ValidationErrors
 
@@ -73,9 +75,15 @@ func ValidateUser(user User) error {
 	}
 
 	if len(errors) > 0 {
-		return errors
+		return user, errors
 	}
-	return nil
+
+	if len(keepFields) > 0 {
+		validUser := FilterFields(user, keepFields[0])
+		return validUser, nil
+	}
+
+	return user, nil
 }
 
 func ValidateEmail(email string, rules *ValidationRules) *ValidationError {
@@ -97,6 +105,13 @@ func ValidateEmail(email string, rules *ValidationRules) *ValidationError {
 		return &ValidationError{
 			Field:   "email",
 			Message: "email is too long",
+		}
+	}
+
+	if !CheckDomain(email) {
+		return &ValidationError{
+			Field:   "email",
+			Message: "email domain is not allowed",
 		}
 	}
 
@@ -189,4 +204,43 @@ func ValidatePassword(password string, rules *ValidationRules) *ValidationError 
 	}
 
 	return nil
+}
+
+func FilterFields(user *db.User, fields []string) *db.User {
+	if user == nil {
+		return nil
+	}
+
+	if len(fields) == 0 {
+		return user
+	}
+
+	v := reflect.ValueOf(user).Elem()
+	t := v.Type()
+
+	keep := make(map[string]bool)
+	for _, field := range fields {
+		for i := 0; i < v.NumField(); i++ {
+			if t.Field(i).Name == field {
+				keep[field] = true
+				break
+			}
+		}
+	}
+	if len(keep) == 0 {
+		return user
+	}
+
+	for i := 0; i < v.NumField(); i++ {
+		field := t.Field(i)
+		if !keep[field.Name] {
+			f := v.Field(i)
+			if f.CanSet() {
+				zero := reflect.Zero(f.Type())
+				f.Set(zero)
+			}
+		}
+	}
+
+	return user
 }

@@ -64,5 +64,11 @@ elif [ "$1" = "migrate" ]; then
         fi
     fi
 else
-    build_and_run_server
+    if [ "$1" != "" ]; then
+        echo "Invalid argument."
+        exit 1
+    else 
+        build_and_run_server
+    fi
+    
 fi

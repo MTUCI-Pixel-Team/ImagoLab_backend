@@ -20,11 +20,11 @@ type User struct {
 	Password     string     `json:"password,omitempty" gorm:"size:256;not null"`
 	Avatar       string     `json:"avatar,omitempty"`
 	Otp          int        `json:"otp,omitempty"`
-	OtpExpires   *time.Time `json:"otp_expires,omitempty"`
+	OtpExpires   *time.Time `json:"otp_expires,omitempty" gorm:"type:timestamp"`
 	OtpTries     int        `json:"-" gorm:"default:0"`
 	OtpTimeout   *time.Time `json:"-" gorm:"type:timestamp"`
 	ResetToken   string     `json:"reset_token,omitempty"`
-	ResetExpires *time.Time `json:"-"`
+	ResetExpires *time.Time `json:"-" gorm:"type:timestamp"`
 	ResetTries   int        `json:"-" gorm:"default:0"`
 	ResetTimeout *time.Time `json:"-" gorm:"type:timestamp"`
 	AuthTries    int        `json:"-" gorm:"default:0"`
@@ -43,7 +43,7 @@ type Token struct {
 
 // type Image struct {
 type Image struct {
-	ID     uint `json:"-" gorm:"primaryKey"`
+	gorm.Model
 	UserID uint
 	Url    string `json:"url"`
 }
