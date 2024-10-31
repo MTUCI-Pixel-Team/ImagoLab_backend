@@ -20,7 +20,7 @@ type User struct {
 	gorm.Model
 	Username     string     `json:"username" gorm:"size:64;not null"`
 	IsActive     bool       `json:"is_active" gorm:"default:false"`
-	Email        string     `json:"email" gorm:"size:256;not null;unique"`
+	Email        string     `json:"email,omitempty" gorm:"size:256;not null;unique"`
 	Password     string     `json:"password,omitempty" gorm:"size:256;not null"`
 	Avatar       string     `json:"avatar,omitempty"`
 	Otp          int        `json:"otp,omitempty"`

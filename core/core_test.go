@@ -346,6 +346,11 @@ func TestStartServer(t *testing.T) {
 	}
 
 	for i, testCase := range testCases {
+		err := InitEnv("../.env")
+		if err != nil {
+			t.Errorf("Error initializing environment in %d test case: %s", i, err)
+		}
+
 		server, er := CreateServer(testCase.handleApp)
 		if er != nil && !testCase.expectedError {
 			t.Errorf("Error creating server in %d test case: %s", i, er)

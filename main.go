@@ -8,13 +8,14 @@ import (
 	"log"
 )
 
+var Production string = "false"
+
 func main() {
-	serv, er := core.CreateServer(app.MainApplication)
-	if er != nil {
-		log.Println("Error creating server", er)
-		return
+	if Production == "true" {
+		core.PRODUCTION = true
 	}
-	er = core.InitEnv()
+
+	er := core.InitEnv()
 	if er != nil {
 		log.Println("Error initializing environment", er)
 		return
@@ -31,6 +32,12 @@ func main() {
 	er = docs.GenerateDocs()
 	if er != nil {
 		log.Println("Error generating docs", er)
+		return
+	}
+
+	serv, er := core.CreateServer(app.MainApplication)
+	if er != nil {
+		log.Println("Error creating server", er)
 		return
 	}
 
