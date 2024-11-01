@@ -148,8 +148,9 @@ docs(
 	summary: Get all images of the user;
 	isAuth: true;
 	QueryParams: {
-		"page": "int",
-		"limit": "int"
+		"page": "int (default is 1)",
+		"limit": "int (default is 10, max 100)",
+		"sort": "string (-created_at or created_at, default is created_at desc)"
 	};
 	resp_content_type: application/json;
 	responsebody: {
@@ -180,6 +181,7 @@ func GetImagesHandler(request core.HttpRequest) core.HttpResponse {
 
 	page := 1
 	limit := 10
+	sort := "created_at desc"
 
 	if pageStr := request.Query["page"]; pageStr != "" {
 		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
@@ -190,6 +192,17 @@ func GetImagesHandler(request core.HttpRequest) core.HttpResponse {
 	if limitStr := request.Query["limit"]; limitStr != "" {
 		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
 			limit = l
+		}
+		if limit > 100 {
+			limit = 100
+		}
+	}
+
+	if sortStr := request.Query["sort"]; sortStr != "" {
+		if sortStr == "created_at" {
+			sort = "created_at asc"
+		} else if sortStr == "-created_at" {
+			sort = "created_at desc"
 		}
 	}
 
@@ -204,6 +217,7 @@ func GetImagesHandler(request core.HttpRequest) core.HttpResponse {
 	offset := (page - 1) * limit
 	images := []db.Image{}
 	result := db.DB.Where("user_id = ?", user.ID).
+		Order(sort).
 		Offset(offset).
 		Limit(limit).
 		Find(&images)
