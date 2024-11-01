@@ -6,11 +6,11 @@ import (
 	"RestAPI/db"
 	"RestAPI/docs"
 	"log"
+	"os"
 )
 
-var Production string = "false"
-
 func main() {
+	Production := os.Getenv("PRODUCTION")
 	if Production == "true" {
 		core.PRODUCTION = true
 	}

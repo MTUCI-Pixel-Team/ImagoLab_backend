@@ -113,15 +113,6 @@ var (
 )
 
 /*
-Firebase settings
-*/
-var (
-	FIREBASE_API_KEY string
-	RECAPTCHA_KEY    string
-	PROJECT_ID       string = "imagolab-1729380577888"
-)
-
-/*
 MAIL SETTINGS
 */
 var (
@@ -166,6 +157,23 @@ func InitEnv(paths ...string) error {
 	}
 
 	DB_CREDENTIALS.Password = os.Getenv("DB_PASSWORD")
+	if os.Getenv("DB_USER") != "" {
+		DB_CREDENTIALS.User = os.Getenv("DB_USER")
+	}
+	if os.Getenv("DB_HOST") != "" {
+		DB_CREDENTIALS.Host = os.Getenv("DB_HOST")
+	}
+	if os.Getenv("DB_NAME") != "" {
+		DB_CREDENTIALS.DB_Name = os.Getenv("DB_NAME")
+	}
+	if os.Getenv("DB_PORT") != "" {
+		DB_CREDENTIALS.Port, err = strconv.Atoi(os.Getenv("DB_PORT"))
+		if err != nil {
+			log.Fatalf("Error env load %v", err)
+			return err
+		}
+	}
+
 	if DB_CREDENTIALS.Password == "" {
 		err = errors.New("DB password not found")
 		log.Fatalf("Error env load %v", err)
